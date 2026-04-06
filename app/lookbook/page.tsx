@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { hidden, visibleFadeUp } from "@/lib/motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -121,12 +121,12 @@ const ENTRIES: Entry[] = [
   },
 ];
 
-const cardVariant = {
+const cardVariant: Variants = {
   hidden: { opacity: 0, y: 36 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, delay: i * 0.07, ease: "easeOut" },
+    transition: { duration: 0.55, delay: i * 0.07, ease: "easeOut" as const },
   }),
 };
 

@@ -274,7 +274,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-linen-cream/55">Shipping</span>
-                    <span>{shipping === 0 ? formatNGN(0) : formatNGN(shipping)}</span>
+                    <span>{formatNGN(shipping)}</span>
                   </div>
                 </div>
 

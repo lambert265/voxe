@@ -35,7 +35,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (mounted && (!user || !isAdmin)) {
       router.replace("/auth");
     }
-  }, [mounted, user, isAdmin, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, user, isAdmin]);
 
   if (!mounted || !user || !isAdmin) {
     return (

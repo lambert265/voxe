@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Plus, X, Zap, Clock, ChevronDown, Trash2 } from "lucide-react";
-import { ALL_PRODUCTS, formatNGN } from "@/lib/products";
+import { ALL_PRODUCTS } from "@/lib/products";
 
 const PRODUCT_IMGS: Record<number, string> = {
   1:"https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=80&q=70",3:"https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=80&q=70",

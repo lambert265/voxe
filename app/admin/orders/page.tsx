@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Search, X, ChevronDown, MapPin, CreditCard, Package } from "lucide-react";
+import { Search, X, MapPin, CreditCard, Package } from "lucide-react";
 import { formatNGN } from "@/lib/products";
 
 const ALL_ORDERS = [

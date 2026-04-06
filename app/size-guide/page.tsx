@@ -150,13 +150,13 @@ export default function SizeGuidePage() {
 
             {/* Men's Table */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-6">Men's Sizes</h2>
+              <h2 className="font-playfair text-2xl text-charcoal mb-6">Men&apos;s Sizes</h2>
               <SizeTable rows={clothingMenRows} cols={sizes} />
             </section>
 
             {/* Women's Table */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-6">Women's Sizes</h2>
+              <h2 className="font-playfair text-2xl text-charcoal mb-6">Women&apos;s Sizes</h2>
               <SizeTable rows={clothingWomenRows} cols={sizes} />
             </section>
           </>

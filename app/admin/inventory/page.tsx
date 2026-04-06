@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Search, AlertTriangle, ChevronDown, Minus, Plus } from "lucide-react";
-import { ALL_PRODUCTS, formatNGN, type Gender, type ProductType } from "@/lib/products";
+import { ALL_PRODUCTS, formatNGN, type Gender } from "@/lib/products";
 
 const PRODUCT_IMGS: Record<number, string> = {
   1:"https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=80&q=70",2:"https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=80&q=70",

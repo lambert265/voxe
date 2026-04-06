@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { Lock, CreditCard, Building2, Package, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";

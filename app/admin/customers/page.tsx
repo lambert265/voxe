@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Search, X, ShoppingBag, MapPin } from "lucide-react";
+import { Search, X, MapPin } from "lucide-react";
 import { formatNGN } from "@/lib/products";
 
 const CUSTOMERS = [

@@ -201,7 +201,7 @@ export default function CartPage() {
             <span className="font-dm text-base text-linen-cream/25 ml-3 font-normal">({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
           </motion.h1>
 
-          <div className="flex flex-col lg:flex-row gap-10">
+          <div className="flex flex-col lg:flex-row gap-10 pb-24 lg:pb-0">
             {/* Left — cart items */}
             <div className="flex-[65] min-w-0">
               <AnimatePresence initial={false}>
@@ -283,6 +283,21 @@ export default function CartPage() {
 
             {/* Right — order summary */}
             <div className="flex-[35] min-w-0">
+              {/* Mobile sticky checkout bar */}
+              <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-obsidian border-t border-white/10 px-4 py-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-dm text-xs text-linen-cream/40">Total</p>
+                  <p className="font-dm font-bold text-amber-tan text-lg">{formatNGN(total)}</p>
+                </div>
+                <Link
+                  href={user ? "/checkout" : "/auth"}
+                  className="flex-1 max-w-[200px] h-[48px] flex items-center justify-center bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-linen-cream transition-colors rounded-sm"
+                >
+                  {user ? "Checkout" : "Sign In to Checkout"}
+                </Link>
+              </div>
+              {/* Desktop order summary */}
+              <div className="hidden lg:block">
               <OrderSummary
                 subtotal={subtotal}
                 shipping={shipping}
@@ -298,6 +313,7 @@ export default function CartPage() {
                 ctaLabel="Proceed to Checkout"
                 user={user}
               />
+              </div>
             </div>
           </div>
         </div>

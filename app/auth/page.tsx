@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 const VISUALS = {
   signin: {
@@ -23,13 +24,21 @@ const VISUALS = {
 export default function AuthPage() {
   const supabase = createClient();
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [tab, setTab] = useState<"signin" | "signup">("signin");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+
+  // Redirect already-logged-in users
+  useEffect(() => {
+    if (!loading && user) router.replace("/shop");
+  }, [user, loading]);
+
+  if (loading || user) return null;
 
   function set(k: keyof typeof form, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -39,7 +48,7 @@ export default function AuthPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setFormLoading(true);
 
     try {
       if (tab === "signup") {
@@ -54,7 +63,14 @@ export default function AuthPage() {
             emailRedirectTo: `${location.origin}/auth/callback`,
           },
         });
-        if (err) { setError(err.message); return; }
+        if (err) {
+          if (err.message.toLowerCase().includes("already registered") || err.message.toLowerCase().includes("already exists") || err.message.toLowerCase().includes("user already")) {
+            setError("An account with this email already exists. Please sign in instead.");
+          } else {
+            setError(err.message);
+          }
+          return;
+        }
         setEmailSent(true);
       } else {
         const { data, error: err } = await supabase.auth.signInWithPassword({
@@ -71,7 +87,7 @@ export default function AuthPage() {
         router.refresh();
       }
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   }
 
@@ -119,8 +135,8 @@ export default function AuthPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-tan/4 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="relative w-full max-w-sm mx-auto">
-          <div className="lg:hidden mb-10">
-            <Link href="/" className="font-playfair text-3xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
+          <div className="lg:hidden mb-8">
+            <Link href="/" className="font-playfair text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
           </div>
 
           <Link href="/" className="inline-flex items-center gap-1.5 font-dm text-xs text-linen-cream/25 hover:text-amber-tan transition-colors mb-10 group">
@@ -222,9 +238,9 @@ export default function AuthPage() {
                     </p>
                   )}
 
-                  <button type="submit" disabled={loading}
+                  <button type="submit" disabled={formLoading}
                     className="btn-amber sheen w-full py-4 text-obsidian font-dm font-semibold text-[11px] tracking-[0.25em] uppercase rounded-lg mt-1 disabled:opacity-50 disabled:cursor-not-allowed">
-                    {loading ? "Please wait…" : tab === "signin" ? "Sign In" : "Create Account"}
+                    {formLoading ? "Please wait…" : tab === "signin" ? "Sign In" : "Create Account"}
                   </button>
 
                   <div className="flex items-center gap-4">

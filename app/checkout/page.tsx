@@ -6,7 +6,9 @@ import { Lock, CreditCard, Building2, Package, ChevronDown } from "lucide-react"
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
 import { formatNGN } from "@/lib/products";
+import { createClient } from "@/lib/supabase/client";
 
 const NIGERIAN_STATES = [
   "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno",
@@ -43,12 +45,18 @@ const inputCls = "w-full border border-charcoal/15 bg-white px-4 py-3 font-dm te
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, clear } = useCart();
+  const { user } = useAuth();
+  const supabase = createClient();
   const [step, setStep] = useState(0);
   const [payMethod, setPayMethod] = useState<PayMethod>("card");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [placing, setPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState("");
 
   const [form, setForm] = useState({
-    name: "", email: "", phone: "", address: "", state: "", lga: "",
+    name: user?.user_metadata?.full_name ?? "",
+    email: user?.email ?? "",
+    phone: "", address: "", state: "", lga: "",
   });
 
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -77,9 +85,37 @@ export default function CheckoutPage() {
     if (step < 2) { setStep(step + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
   }
 
-  function handlePlaceOrder() {
-    clear();
-    router.push("/checkout/success");
+  async function handlePlaceOrder() {
+    setPlacing(true);
+    setPlaceError("");
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user?.id ?? null,
+          customer_name: form.name,
+          customer_email: form.email,
+          customer_phone: form.phone,
+          delivery_address: `${form.address}, ${form.lga}, ${form.state}`,
+          payment_method: payMethod,
+          items: items.map((i) => ({
+            id: i.id, name: i.name, price: i.price,
+            size: i.size, color: i.color, quantity: i.quantity,
+          })),
+          subtotal,
+          shipping,
+          total,
+          status: "Pending",
+        })
+        .select("id")
+        .single();
+
+      if (error) { setPlaceError("Failed to place order. Please try again."); return; }
+      clear();
+      router.push(`/checkout/success?order=${data.id}`);
+    } finally {
+      setPlacing(false);
+    }
   }
 
   return (
@@ -240,9 +276,10 @@ export default function CheckoutPage() {
                       className="h-[52px] px-8 border border-charcoal/20 text-charcoal font-dm text-[11px] tracking-[0.2em] uppercase hover:border-charcoal transition-colors rounded-sm">
                       ← Back
                     </button>
-                    <button onClick={handlePlaceOrder}
-                      className="flex-1 h-[52px] bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-obsidian hover:text-linen-cream transition-colors duration-300 rounded-sm">
-                      Place Order →
+                    {placeError && <p className="font-dm text-xs text-red-500 col-span-2">{placeError}</p>}
+                    <button onClick={handlePlaceOrder} disabled={placing}
+                      className="flex-1 h-[52px] bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-obsidian hover:text-linen-cream transition-colors duration-300 rounded-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                      {placing ? "Placing Order…" : "Place Order →"}
                     </button>
                   </div>
                 </motion.div>

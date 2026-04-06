@@ -67,7 +67,8 @@ function ProductCard({ p }: { p: typeof products[0] }) {
         </button>
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSizes((v) => !v); }}
-          className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian/90 border-t border-amber-tan/20 text-amber-tan font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setShowSizes((v) => !v); }}
+          className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian/90 border-t border-amber-tan/20 text-amber-tan font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 z-10 sm:translate-y-full sm:group-hover:translate-y-0 sm:transition-transform sm:duration-300">
           {added ? "Added ✓" : "Quick Add"}
         </button>
         <AnimatePresence>
@@ -77,7 +78,7 @@ function ProductCard({ p }: { p: typeof products[0] }) {
               <p className="font-dm text-[9px] text-amber-tan/60 uppercase tracking-widest mb-2">Select size</p>
               <div className="flex flex-wrap gap-1.5">
                 {p.sizes.map((s) => (
-                  <button key={s} onClick={(e) => handleSelectSize(e, s)}
+                  <button key={s} onClick={(e) => handleSelectSize(e, s)} onTouchEnd={(e) => handleSelectSize(e, s)}
                     className="font-dm text-[10px] px-2.5 py-1.5 border border-amber-tan/25 text-linen-cream/70 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan transition-colors">
                     {s}
                   </button>

@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Product, formatNGN } from "@/lib/products";
+import { useCart } from "@/lib/cart";
 
 const PRODUCT_IMAGES: Record<number, { main: string; hover: string }> = {
   // Men Clothing
@@ -74,8 +75,12 @@ const COLOR_HEX: Record<string, string> = {
 export { PRODUCT_IMAGES };
 
 export default function ProductCard({ product }: { product: Product }) {
+  const { add } = useCart();
   const [wished, setWished] = useState(false);
+  const [showSizes, setShowSizes] = useState(false);
   const [added, setAdded] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
   const imgs = PRODUCT_IMAGES[product.id] ?? {
     main:  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=75",
     hover: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600&q=75",
@@ -83,15 +88,50 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const genderLabel: Record<string, string> = { men: "Men", women: "Women", teens: "Teens", kids: "Kids" };
 
+  // Close size picker when clicking outside
+  useEffect(() => {
+    function onOutside(e: MouseEvent | TouchEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setShowSizes(false);
+    }
+    document.addEventListener("mousedown", onOutside);
+    document.addEventListener("touchstart", onOutside);
+    return () => {
+      document.removeEventListener("mousedown", onOutside);
+      document.removeEventListener("touchstart", onOutside);
+    };
+  }, []);
+
+  function handleQuickAdd(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (product.sizes.length === 1) {
+      // Only one size — add directly
+      add({ id: product.id, name: product.name, price: product.price, size: product.sizes[0], color: product.colors[0], bg: product.bg });
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1500);
+    } else {
+      setShowSizes((v) => !v);
+    }
+  }
+
+  function handleSelectSize(e: React.MouseEvent | React.TouchEvent, size: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    add({ id: product.id, name: product.name, price: product.price, size, color: product.colors[0], bg: product.bg });
+    setShowSizes(false);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  }
+
   return (
     <motion.article
       whileHover={{ y: -2 }}
       transition={{ duration: 0.25 }}
-      className="group cursor-pointer"
+      className="group cursor-pointer relative"
+      ref={ref}
     >
       <Link href={`/product/${product.id}`}>
         <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-stone-100">
-          {/* Main image — visible by default, fades out on hover */}
           <Image
             src={imgs.main}
             alt={product.name}
@@ -99,7 +139,6 @@ export default function ProductCard({ product }: { product: Product }) {
             sizes="(max-width:768px) 50vw, 33vw"
             className="object-cover object-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.04]"
           />
-          {/* Hover image — hidden by default, fades in on hover */}
           <Image
             src={imgs.hover}
             alt={`${product.name} — alternate view`}
@@ -120,10 +159,41 @@ export default function ProductCard({ product }: { product: Product }) {
           >
             <Heart size={13} className={wished ? "fill-obsidian text-obsidian" : "text-obsidian"} />
           </button>
+
+          {/* Size picker popup */}
+          <AnimatePresence>
+            {showSizes && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-12 left-0 right-0 z-20 bg-obsidian border-t border-amber-tan/20 px-3 py-3"
+              >
+                <p className="font-dm text-[9px] text-linen-cream/40 uppercase tracking-widest mb-2">Select size</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {product.sizes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={(e) => handleSelectSize(e, s)}
+                      onTouchEnd={(e) => handleSelectSize(e, s)}
+                      className="font-dm text-[10px] px-2.5 py-1.5 border border-white/15 text-linen-cream/70 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Quick Add button — visible on hover (desktop) and always on mobile */}
           <button
-            onClick={(e) => { e.preventDefault(); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
+            onClick={handleQuickAdd}
+            onTouchEnd={handleQuickAdd}
             aria-label="Quick add"
-            className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian text-linen-cream font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10"
+            className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian text-linen-cream font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 z-10
+              sm:translate-y-full sm:group-hover:translate-y-0 sm:transition-transform sm:duration-300"
           >
             {added ? <span className="text-amber-tan">Added ✓</span> : <><Plus size={12} /> Quick Add</>}
           </button>

@@ -36,6 +36,7 @@ export default function AuthPage() {
   // Redirect already-logged-in users
   useEffect(() => {
     if (!loading && user) router.replace("/shop");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
   if (loading || user) return null;

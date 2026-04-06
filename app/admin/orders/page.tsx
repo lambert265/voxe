@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Search, X, MapPin, CreditCard, Package, RefreshCw } from "lucide-react";
+import { Search, X, MapPin, CreditCard, RefreshCw } from "lucide-react";
 import { formatNGN } from "@/lib/products";
 import { createClient } from "@/lib/supabase/client";
 
@@ -49,7 +49,7 @@ export default function AdminOrders() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => { fetchOrders(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function updateStatus(id: string, status: string) {
     await supabase.from("orders").update({ status }).eq("id", id);

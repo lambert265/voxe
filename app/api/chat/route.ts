@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json();
 
     const completion = await groq.chat.completions.create({
-      model: "llama3-8b-8192",
+      model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...messages.slice(-8), // keep last 8 messages for context
@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
 
     const reply = completion.choices[0]?.message?.content ?? "Hit us at hello@voxe.com — they'll sort you out.";
     return NextResponse.json({ reply });
-  } catch {
+  } catch (err) {
+    console.error("Groq error:", err);
     return NextResponse.json({ reply: "Something went wrong. Hit us at hello@voxe.com." }, { status: 200 });
   }
 }

@@ -251,7 +251,8 @@ export default function Navbar() {
                         </div>
                         <div className="border-t border-white/8 py-2">
                           <button
-                            onClick={() => { logout().then(() => { router.push("/"); router.refresh(); }); setProfileOpen(false); }}
+                            onClick={() => { logout(); setProfileOpen(false); router.push("/"); }}
+                            className="flex items-center gap-3 w-full px-5 py-2.5 font-dm text-sm text-red-400/70 hover:text-red-400 hover:bg-white/4 transition-colors"
                           >
                             <LogOut size={14} /> Sign Out
                           </button>
@@ -448,7 +449,8 @@ export default function Navbar() {
                         className="flex items-center gap-3 py-2 text-linen-cream/70 hover:text-amber-tan transition-colors">
                         <Heart size={15} /> Wishlist {wishCount > 0 && <span className="ml-auto text-amber-tan text-xs">{wishCount}</span>}
                       </Link>
-                      <button onClick={() => { logout().then(() => { router.push("/"); router.refresh(); }); setMobileOpen(false); }}>
+                      <button onClick={() => { logout(); setMobileOpen(false); router.push("/"); }}
+                        className="flex items-center gap-3 py-2 text-red-400/60 hover:text-red-400 transition-colors w-full">
                         <LogOut size={15} /> Sign Out
                       </button>
                     </>

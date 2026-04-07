@@ -7,7 +7,7 @@ interface AuthCtx {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
 const Ctx = createContext<AuthCtx>({ user: null, isAdmin: false, loading: true, logout: async () => {} });
@@ -46,10 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+  const logout = useCallback(() => {
     setUser(null);
     setIsAdmin(false);
+    supabase.auth.signOut(); // fire and forget
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

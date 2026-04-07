@@ -17,10 +17,10 @@ function SkeletonGrid() {
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="animate-pulse">
-          <div className="aspect-[3/4] bg-charcoal/8 rounded-sm mb-3" />
-          <div className="h-2.5 bg-charcoal/8 rounded w-1/3 mb-2" />
-          <div className="h-3 bg-charcoal/10 rounded w-3/4 mb-1.5" />
-          <div className="h-2.5 bg-charcoal/8 rounded w-1/4" />
+          <div className="aspect-[3/4] bg-amber-tan/5 rounded-sm mb-3" />
+          <div className="h-2.5 bg-amber-tan/5 rounded w-1/3 mb-2" />
+          <div className="h-3 bg-amber-tan/8 rounded w-3/4 mb-1.5" />
+          <div className="h-2.5 bg-amber-tan/5 rounded w-1/4" />
         </div>
       ))}
     </div>
@@ -60,9 +60,10 @@ function ShopInner({ slug }: { slug: string[] }) {
     }
     return results;
   }, [filters, searchQuery]);
-  const totalPages  = Math.ceil(allFiltered.length / PAGE_SIZE);
-  const page        = Math.min(filters.page, totalPages || 1);
-  const pageItems   = allFiltered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const totalPages = Math.ceil(allFiltered.length / PAGE_SIZE);
+  const page       = Math.min(filters.page, totalPages || 1);
+  const pageItems  = allFiltered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const setPage = (p: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -71,16 +72,16 @@ function ShopInner({ slug }: { slug: string[] }) {
   };
 
   return (
-    <div className="min-h-screen bg-off-white pt-[68px]">
+    <div className="min-h-screen bg-obsidian pt-[68px]">
       {/* Page header */}
-      <div className="bg-obsidian py-14 px-6">
+      <div className="py-14 px-6">
         <div className="max-w-7xl mx-auto">
           <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-2">VOXE</p>
-          <h1 className="font-dm text-4xl md:text-5xl text-linen-cream">{label}</h1>
+          <h1 className="font-playfair text-4xl md:text-5xl text-linen-cream">{label}</h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
         <div className="flex gap-10">
           {/* Sidebar desktop */}
           <div className="hidden lg:block w-52 flex-shrink-0">
@@ -92,13 +93,13 @@ function ShopInner({ slug }: { slug: string[] }) {
           {/* Mobile sidebar overlay */}
           {sidebarOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
-              <div className="absolute inset-0 bg-obsidian/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+              <div className="absolute inset-0 bg-obsidian/70 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
               <motion.div
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 260 }}
-                className="absolute left-0 top-0 bottom-0 w-72 bg-off-white overflow-y-auto p-6 shadow-2xl"
+                className="absolute left-0 top-0 bottom-0 w-72 bg-obsidian overflow-y-auto p-6 shadow-2xl border-r border-amber-tan/10"
               >
                 <FilterSidebar filters={filters} onClose={() => setSidebarOpen(false)} />
               </motion.div>
@@ -118,11 +119,11 @@ function ShopInner({ slug }: { slug: string[] }) {
               <SkeletonGrid />
             ) : pageItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-32 text-center">
-                <span className="font-dm text-7xl italic text-obsidian/8 mb-5">V</span>
-                <p className="font-dm text-sm text-charcoal/40 mb-4">No products match your filters.</p>
+                <span className="font-playfair text-7xl text-amber-tan/10 mb-5">V</span>
+                <p className="font-dm text-sm text-linen-cream/40 mb-4">No products match your filters.</p>
                 <button
                   onClick={() => router.push(pathname, { scroll: false })}
-                  className="font-dm text-xs text-amber-tan border-b border-amber-tan pb-0.5 hover:text-charcoal hover:border-charcoal transition-colors"
+                  className="font-dm text-xs text-amber-tan border-b border-amber-tan pb-0.5 hover:text-linen-cream hover:border-linen-cream transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -145,31 +146,22 @@ function ShopInner({ slug }: { slug: string[] }) {
 
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-16">
-                    <button
-                      onClick={() => setPage(page - 1)}
-                      disabled={page === 1}
-                      className="w-9 h-9 border border-obsidian/20 flex items-center justify-center hover:border-amber-tan hover:text-amber-tan transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={() => setPage(page - 1)} disabled={page === 1}
+                      className="w-9 h-9 border border-amber-tan/20 text-linen-cream/50 flex items-center justify-center hover:border-amber-tan hover:text-amber-tan transition-colors disabled:opacity-25 disabled:cursor-not-allowed">
                       <ChevronLeft size={15} />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => setPage(p)}
+                      <button key={p} onClick={() => setPage(p)}
                         className={`w-9 h-9 border font-dm text-sm transition-colors ${
                           p === page
                             ? "bg-amber-tan border-amber-tan text-obsidian font-semibold"
-                            : "border-obsidian/20 text-charcoal/60 hover:border-amber-tan hover:text-amber-tan"
-                        }`}
-                      >
+                            : "border-amber-tan/20 text-linen-cream/50 hover:border-amber-tan hover:text-amber-tan"
+                        }`}>
                         {p}
                       </button>
                     ))}
-                    <button
-                      onClick={() => setPage(page + 1)}
-                      disabled={page === totalPages}
-                      className="w-9 h-9 border border-obsidian/20 flex items-center justify-center hover:border-amber-tan hover:text-amber-tan transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={() => setPage(page + 1)} disabled={page === totalPages}
+                      className="w-9 h-9 border border-amber-tan/20 text-linen-cream/50 flex items-center justify-center hover:border-amber-tan hover:text-amber-tan transition-colors disabled:opacity-25 disabled:cursor-not-allowed">
                       <ChevronRight size={15} />
                     </button>
                   </div>

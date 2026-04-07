@@ -126,7 +126,7 @@ export default function ProductCard({ product }: { product: Product }) {
       ref={ref}
     >
       <Link href={`/product/${product.id}`}>
-        <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-stone-100">
+        <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-[#111]">
           <Image src={imgs.main} alt={product.name} fill sizes="(max-width:768px) 50vw, 33vw"
             className="object-cover object-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.04]" />
           <Image src={imgs.hover} alt="" fill sizes="(max-width:768px) 50vw, 33vw"
@@ -215,10 +215,10 @@ export default function ProductCard({ product }: { product: Product }) {
           <span className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.18em]">
             {genderLabel[product.gender]} · {product.subtype}
           </span>
-          <h3 className="font-dm text-sm font-medium text-charcoal group-hover:text-amber-tan transition-colors duration-200 leading-snug">
+          <h3 className="font-dm text-sm font-medium text-linen-cream group-hover:text-amber-tan transition-colors duration-200 leading-snug">
             {product.name}
           </h3>
-          <p className="font-dm text-sm text-charcoal/60">{formatNGN(product.price)}</p>
+          <p className="font-dm text-sm text-linen-cream/50">{formatNGN(product.price)}</p>
           <div className="flex gap-1.5 pt-1">
             {product.colors.slice(0, 4).map((c) => (
               <span key={c} title={c} className="w-3 h-3 rounded-full border border-obsidian/15"

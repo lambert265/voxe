@@ -197,7 +197,7 @@ export default function LookbookPage() {
       <Navbar />
       <main className="bg-obsidian min-h-screen pt-[68px]">
         {/* Header */}
-        <section className="min-h-[40vh] flex flex-col items-center justify-center text-center px-6 py-20 border-b border-white/5">
+        <section className="min-h-[40vh] flex flex-col items-center justify-center text-center px-6 py-20">
           <motion.p
             initial={hidden}
             animate={visibleFadeUp(0)}

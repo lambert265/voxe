@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, X, ShoppingBag } from "lucide-react";
+import { Heart, X, ShoppingBag, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -54,67 +54,70 @@ export default function WishlistPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-off-white pt-[68px]">
-        <div className="bg-charcoal py-14 px-6">
-          <div className="max-w-7xl mx-auto flex items-center gap-3">
-            <Heart size={20} className="text-amber-tan" />
-            <h1 className="font-dm text-4xl md:text-5xl text-linen-cream">Wishlist</h1>
+      <main className="min-h-screen bg-obsidian pt-[68px]">
+
+        {/* Header */}
+        <div className="px-6 pt-14 pb-10 max-w-7xl mx-auto">
+          <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.4em] mb-2">Saved</p>
+          <div className="flex items-center gap-3">
+            <h1 className="font-playfair text-4xl md:text-5xl text-linen-cream">Wishlist</h1>
             {items.length > 0 && (
-              <span className="font-dm text-sm text-linen-cream/35 ml-1">
+              <span className="font-dm text-sm text-linen-cream/30">
                 ({items.length} {items.length === 1 ? "item" : "items"})
               </span>
             )}
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto px-6 pb-24">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center">
-              <Heart size={48} className="text-charcoal/10 mb-6" />
-              <h2 className="font-dm text-3xl text-charcoal mb-3">Your wishlist is empty</h2>
-              <p className="font-dm text-sm text-charcoal/40 mb-8">
+              <div className="w-16 h-16 rounded-full bg-amber-tan/10 border border-amber-tan/20 flex items-center justify-center mb-6">
+                <Heart size={24} className="text-amber-tan/40" />
+              </div>
+              <h2 className="font-playfair text-3xl text-linen-cream mb-3">Your wishlist is empty</h2>
+              <p className="font-dm text-sm text-linen-cream/35 mb-8 max-w-xs leading-relaxed">
                 Save pieces you love and come back to them anytime.
               </p>
               <Link href="/shop"
-                className="btn-amber sheen px-10 py-4 text-white font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm">
-                Browse Shop
+                className="btn-amber sheen inline-flex items-center gap-2 px-10 py-4 text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm">
+                Browse Shop <ArrowRight size={13} />
               </Link>
             </div>
           ) : (
             <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               <AnimatePresence>
                 {items.map((p) => (
-                  <motion.div
-                    key={p.id} layout
+                  <motion.div key={p.id} layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.25 }}
-                    className="group relative"
-                  >
-                    <div className="relative aspect-[3/4] overflow-hidden bg-charcoal/5 rounded-sm border border-charcoal/8 mb-3">
+                    className="group relative">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-charcoal rounded-sm border border-amber-tan/10 mb-3">
                       <Link href={`/product/${p.id}`}>
                         <Image src={IMGS[p.id] ?? ""} alt={p.name} fill
                           sizes="(max-width:768px) 50vw, 25vw"
                           className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.04]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-obsidian/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </Link>
                       <button onClick={() => toggle(p.id)}
-                        className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors z-10"
+                        className="absolute top-3 right-3 w-8 h-8 bg-obsidian/70 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-red-500/20 transition-colors z-10 border border-white/10"
                         aria-label="Remove from wishlist">
-                        <X size={13} className="text-charcoal/50" />
+                        <X size={13} className="text-linen-cream/60" />
                       </button>
                     </div>
                     <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.18em] mb-1 capitalize">
                       {p.gender} · {p.subtype}
                     </p>
                     <Link href={`/product/${p.id}`}>
-                      <h3 className="font-dm text-sm font-medium text-charcoal hover:text-amber-tan transition-colors leading-snug mb-1">
+                      <h3 className="font-dm text-sm font-medium text-linen-cream hover:text-amber-tan transition-colors leading-snug mb-1">
                         {p.name}
                       </h3>
                     </Link>
-                    <p className="font-dm text-sm text-charcoal/45 mb-3">{formatNGN(p.price)}</p>
+                    <p className="font-dm text-sm text-linen-cream/40 mb-3">{formatNGN(p.price)}</p>
                     <button onClick={() => handleAddToCart(p)}
-                      className="w-full flex items-center justify-center gap-2 border border-charcoal/20 py-2.5 font-dm text-[10px] tracking-[0.18em] uppercase text-charcoal hover:bg-charcoal hover:text-off-white transition-colors duration-200 rounded-sm">
+                      className="w-full flex items-center justify-center gap-2 border border-amber-tan/20 py-2.5 font-dm text-[10px] tracking-[0.18em] uppercase text-linen-cream/60 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan transition-colors duration-200 rounded-sm">
                       <ShoppingBag size={12} /> Add to Cart
                     </button>
                   </motion.div>

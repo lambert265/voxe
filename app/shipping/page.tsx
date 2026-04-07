@@ -73,7 +73,7 @@ export default function ShippingPage() {
               We accept returns within <span className="text-linen-cream font-semibold">30 days</span> of delivery for items that are unworn, unwashed, and in original condition with tags attached. Sale items and underwear are non-returnable.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {returnSteps.map((step, i) => (
+              {returnSteps.map((step) => (
                 <div key={step.n} className="card-gloss rounded-xl p-6 border border-amber-tan/10 flex gap-4">
                   <span className="font-playfair text-3xl text-amber-tan/40 shrink-0 leading-none">{step.n}</span>
                   <div>

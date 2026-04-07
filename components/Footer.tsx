@@ -80,7 +80,7 @@ export default function Footer() {
             <div className="col-span-2 md:col-span-1">
               <Link
                 href="/"
-                className="font-playfair text-[1.8rem] font-bold text-amber-tan block mb-5"
+                className="font-dm text-[1.8rem] font-bold text-amber-tan block mb-5"
                 style={{ letterSpacing: "-1px" }}
               >
                 VOXE

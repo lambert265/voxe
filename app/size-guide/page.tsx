@@ -68,7 +68,7 @@ function MeasureCard({ title, instruction, children }: { title: string; instruct
   return (
     <div className="bg-white border border-linen-cream rounded-sm p-6 flex flex-col items-center gap-3 text-center">
       {children}
-      <p className="font-playfair text-lg text-charcoal">{title}</p>
+      <p className="font-dm text-lg text-charcoal">{title}</p>
       <p className="font-dm text-sm text-charcoal/60 leading-relaxed">{instruction}</p>
     </div>
   );
@@ -82,7 +82,7 @@ export default function SizeGuidePage() {
       <Navbar />
       {/* Header */}
       <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-playfair text-5xl md:text-6xl text-charcoal mb-4">Find Your Fit</h1>
+        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">Find Your Fit</h1>
         <p className="font-dm text-charcoal/55 text-lg max-w-md mx-auto">
           Use our size guide to find the perfect fit for clothing and footwear.
         </p>
@@ -113,7 +113,7 @@ export default function SizeGuidePage() {
           <>
             {/* How to Measure */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-8">How to Measure</h2>
+              <h2 className="font-dm text-2xl text-charcoal mb-8">How to Measure</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <MeasureCard title="Chest" instruction="Measure around the fullest part of your chest, keeping the tape horizontal.">
                   <svg viewBox="0 0 80 120" className="w-20 h-28" fill="none">
@@ -150,13 +150,13 @@ export default function SizeGuidePage() {
 
             {/* Men's Table */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-6">Men&apos;s Sizes</h2>
+              <h2 className="font-dm text-2xl text-charcoal mb-6">Men&apos;s Sizes</h2>
               <SizeTable rows={clothingMenRows} cols={sizes} />
             </section>
 
             {/* Women's Table */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-6">Women&apos;s Sizes</h2>
+              <h2 className="font-dm text-2xl text-charcoal mb-6">Women&apos;s Sizes</h2>
               <SizeTable rows={clothingWomenRows} cols={sizes} />
             </section>
           </>
@@ -164,7 +164,7 @@ export default function SizeGuidePage() {
           <>
             {/* How to Measure Foot */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-8">How to Measure Your Foot</h2>
+              <h2 className="font-dm text-2xl text-charcoal mb-8">How to Measure Your Foot</h2>
               <div className="bg-white border border-linen-cream rounded-sm p-8 flex flex-col md:flex-row items-center gap-10">
                 <svg viewBox="0 0 120 160" className="w-32 h-44 shrink-0" fill="none">
                   <path d="M40 140 C20 138 14 120 16 100 C18 80 20 60 24 40 C28 20 36 10 46 10 C56 10 62 18 64 30 C68 24 76 22 82 28 C88 34 86 44 80 48 C86 50 90 58 88 66 C86 74 78 76 72 74 C74 82 72 92 68 100 C76 102 82 110 80 120 C78 130 68 140 56 142 Z" stroke="#2A2A2A" strokeWidth="1.5" fill="#F7F5F2" />
@@ -174,7 +174,7 @@ export default function SizeGuidePage() {
                   <text x="49" y="148" textAnchor="middle" fontSize="8" fill="#B5906A" fontFamily="sans-serif">Length</text>
                 </svg>
                 <div className="space-y-3">
-                  <p className="font-playfair text-xl text-charcoal">Step-by-step</p>
+                  <p className="font-dm text-xl text-charcoal">Step-by-step</p>
                   <ol className="font-dm text-sm text-charcoal/65 space-y-2 list-decimal list-inside leading-relaxed">
                     <li>Place a sheet of paper on a hard floor and stand on it.</li>
                     <li>Trace the outline of your foot with a pencil held vertically.</li>
@@ -187,7 +187,7 @@ export default function SizeGuidePage() {
 
             {/* Shoe Size Table */}
             <section>
-              <h2 className="font-playfair text-2xl text-charcoal mb-6">Size Conversion</h2>
+              <h2 className="font-dm text-2xl text-charcoal mb-6">Size Conversion</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm font-dm border-collapse">
                   <thead>

@@ -37,7 +37,7 @@ export default function Hero() {
 
         <motion.h1
           initial={hidden} animate={visibleFadeUp(0.1)}
-          className="font-playfair text-[clamp(3.5rem,10vw,8rem)] text-linen-cream leading-[0.9] mb-8 tracking-tight"
+          className="font-dm text-[clamp(3.5rem,10vw,8rem)] text-linen-cream leading-[0.9] mb-8 tracking-tight"
         >
           Wear your<br />
           <em className="not-italic bg-amber-gradient bg-clip-text text-transparent">story.</em>

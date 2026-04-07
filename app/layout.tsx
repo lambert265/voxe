@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
@@ -7,12 +7,6 @@ import { AuthProvider } from "@/lib/auth";
 import CartToast from "@/components/CartToast";
 import ScrollToTop from "@/components/ScrollToTop";
 import PageTransition from "@/components/PageTransition";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
 
 const dm = DM_Sans({
   subsets: ["latin"],
@@ -34,8 +28,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dm.variable}`}>
-      <body>
+    <html lang="en" className={dm.variable}>
+      <body suppressHydrationWarning>
         <AuthProvider>
         <CartProvider>
           <WishlistProvider>

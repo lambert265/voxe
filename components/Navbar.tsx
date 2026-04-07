@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, ArrowRight, User, LogOut, Package } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
@@ -110,6 +110,7 @@ export default function Navbar() {
   const { count: wishCount } = useWishlist();
   const { user, logout, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -250,8 +251,7 @@ export default function Navbar() {
                         </div>
                         <div className="border-t border-white/8 py-2">
                           <button
-                            onClick={() => { logout(); setProfileOpen(false); }}
-                            className="flex items-center gap-3 w-full px-5 py-2.5 font-dm text-sm text-red-400/70 hover:text-red-400 hover:bg-white/4 transition-colors"
+                            onClick={() => { logout().then(() => { router.push("/"); router.refresh(); }); setProfileOpen(false); }}
                           >
                             <LogOut size={14} /> Sign Out
                           </button>
@@ -448,8 +448,7 @@ export default function Navbar() {
                         className="flex items-center gap-3 py-2 text-linen-cream/70 hover:text-amber-tan transition-colors">
                         <Heart size={15} /> Wishlist {wishCount > 0 && <span className="ml-auto text-amber-tan text-xs">{wishCount}</span>}
                       </Link>
-                      <button onClick={() => { logout(); setMobileOpen(false); }}
-                        className="flex items-center gap-3 py-2 text-red-400/60 hover:text-red-400 transition-colors w-full">
+                      <button onClick={() => { logout().then(() => { router.push("/"); router.refresh(); }); setMobileOpen(false); }}>
                         <LogOut size={15} /> Sign Out
                       </button>
                     </>

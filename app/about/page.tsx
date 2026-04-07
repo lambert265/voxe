@@ -52,7 +52,7 @@ export default function AboutPage() {
         <motion.h1
           initial={hidden}
           animate={visibleFadeUp(0.1)}
-          className="font-playfair text-[clamp(2.8rem,8vw,56px)] text-linen-cream mb-5"
+          className="font-dm text-[clamp(2.8rem,8vw,56px)] text-linen-cream mb-5"
         >
           We are VOXE
         </motion.h1>
@@ -83,7 +83,7 @@ export default function AboutPage() {
             viewport={{ once: true, amount: 0.3 }}
             className="space-y-6"
           >
-            <h2 className="font-playfair text-4xl md:text-5xl text-charcoal">Our Story</h2>
+            <h2 className="font-dm text-4xl md:text-5xl text-charcoal">Our Story</h2>
             <p className="font-dm text-charcoal/65 leading-relaxed">
               VOXE was born from a simple frustration — fashion that excluded more than it welcomed. We set out to build a brand where the clothes do the talking, not the labels. From our first collection, we committed to cuts that flatter every body and fabrics that feel as good as they look.
             </p>
@@ -109,8 +109,8 @@ export default function AboutPage() {
                 viewport={{ once: true, amount: 0.3 }}
                 className="bg-obsidian p-10 space-y-4"
               >
-                <span className="font-playfair text-4xl text-amber-tan">{v.n}</span>
-                <h3 className="font-playfair text-2xl text-linen-cream">{v.name}</h3>
+                <span className="font-dm text-4xl text-amber-tan">{v.n}</span>
+                <h3 className="font-dm text-2xl text-linen-cream">{v.name}</h3>
                 <p className="font-dm text-linen-cream/50 leading-relaxed text-sm">{v.desc}</p>
               </motion.div>
             ))}
@@ -123,7 +123,7 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
           {stats.map((s) => (
             <div key={s.label} className="space-y-2">
-              <p className="font-playfair text-[48px] leading-none text-amber-tan">
+              <p className="font-dm text-[48px] leading-none text-amber-tan">
                 <CountUp target={s.num} suffix={s.suffix} />
               </p>
               <p className="font-dm text-sm text-charcoal/50 tracking-wide">{s.label}</p>
@@ -138,7 +138,7 @@ export default function AboutPage() {
           initial={hidden}
           whileInView={visibleFadeUp(0)}
           viewport={{ once: true, amount: 0.5 }}
-          className="font-playfair text-4xl md:text-5xl text-linen-cream mb-10"
+          className="font-dm text-4xl md:text-5xl text-linen-cream mb-10"
         >
           Ready to find your style?
         </motion.h2>

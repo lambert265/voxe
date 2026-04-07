@@ -94,7 +94,7 @@ export default function AdminDrops() {
 
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2 mb-3">
-                  <h3 className="font-playfair text-lg text-linen-cream leading-tight">{drop.name}</h3>
+                  <h3 className="font-dm text-lg text-linen-cream leading-tight">{drop.name}</h3>
                   <span className={`font-dm text-[9px] tracking-wider uppercase px-2 py-1 rounded-full border shrink-0 ${STATUS_STYLES[drop.status]}`}>{drop.status}</span>
                 </div>
 
@@ -126,7 +126,7 @@ export default function AdminDrops() {
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-sm overflow-y-auto py-8 px-4">
           <div className="card-gloss rounded-2xl w-full max-w-xl border border-amber-tan/15">
             <div className="flex items-center justify-between px-6 py-5 border-b border-amber-tan/10">
-              <h2 className="font-playfair text-xl text-linen-cream">Create Drop</h2>
+              <h2 className="font-dm text-xl text-linen-cream">Create Drop</h2>
               <button onClick={() => setModal(false)} className="text-linen-cream/30 hover:text-linen-cream transition-colors"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-5">

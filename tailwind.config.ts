@@ -16,7 +16,7 @@ const config: Config = {
         "charcoal-2": "#141208",
       },
       fontFamily: {
-        playfair: ["var(--font-playfair)", "serif"],
+        playfair: ["var(--font-dm)", "serif"],
         dm:       ["var(--font-dm)", "sans-serif"],
       },
       backgroundImage: {

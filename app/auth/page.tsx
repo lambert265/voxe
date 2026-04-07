@@ -8,6 +8,13 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth";
 
+function checkIsAdmin(u: { email?: string | null } | null): boolean {
+  if (!u) return false;
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim().toLowerCase();
+  const userEmail = u.email?.trim().toLowerCase();
+  return !!adminEmail && !!userEmail && userEmail === adminEmail;
+}
+
 const VISUALS = {
   signin: {
     img: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900&q=80",
@@ -34,12 +41,16 @@ export default function AuthPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
 
   // Redirect already-logged-in users
-  useEffect(() => {
-    if (!loading && user) router.replace("/shop");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading]);
+  const [signingIn, setSigningIn] = useState(false);
 
-  if (loading || user) return null;
+  useEffect(() => {
+    if (!loading && user && !signingIn) {
+      router.replace(checkIsAdmin(user) ? "/admin" : "/shop");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading, signingIn]);
+
+  if (loading || (user && !signingIn)) return null;
 
   function set(k: keyof typeof form, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -74,16 +85,28 @@ export default function AuthPage() {
         }
         setEmailSent(true);
       } else {
+        setSigningIn(true);
         const { data, error: err } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
-        if (err) { setError(err.message); return; }
+        if (err) { setError(err.message); setSigningIn(false); return; }
 
-        // Check admin role
-        const { data: profile } = await supabase
-          .from("profiles").select("role").eq("id", data.user.id).single();
-        const isAdmin = profile?.role === "admin" || data.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+        // Check admin by email directly — most reliable
+        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim().toLowerCase();
+        const userEmail = data.user.email?.trim().toLowerCase();
+        const isAdmin = userEmail === adminEmail;
+
+        // Also check profiles table as fallback
+        if (!isAdmin) {
+          const { data: profile } = await supabase
+            .from("profiles").select("role").eq("id", data.user.id).single();
+          if (profile?.role === "admin") {
+            router.push("/admin");
+            return;
+          }
+        }
+
         router.push(isAdmin ? "/admin" : "/shop");
         router.refresh();
       }
@@ -102,7 +125,7 @@ export default function AuthPage() {
   const visual = VISUALS[tab];
 
   return (
-    <main className="min-h-screen bg-obsidian flex">
+    <main className="min-h-screen bg-obsidian flex overflow-y-auto">
 
       {/* ── Left panel ── */}
       <div className="hidden lg:flex lg:w-[52%] relative overflow-hidden flex-col">
@@ -116,13 +139,13 @@ export default function AuthPage() {
           </motion.div>
         </AnimatePresence>
         <div className="relative z-10 flex flex-col h-full p-12">
-          <Link href="/" className="font-playfair text-3xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
+          <Link href="/" className="font-dm text-3xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
           <div className="mt-auto">
             <AnimatePresence mode="wait">
               <motion.div key={tab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.4, delay: 0.1 }}>
                 <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.4em] mb-3">VOXE — SS 2025</p>
-                <h2 className="font-playfair text-5xl text-linen-cream leading-tight mb-3">{visual.headline}</h2>
+                <h2 className="font-dm text-5xl text-linen-cream leading-tight mb-3">{visual.headline}</h2>
                 <p className="font-dm text-linen-cream/45 text-base">{visual.sub}</p>
               </motion.div>
             </AnimatePresence>
@@ -132,12 +155,12 @@ export default function AuthPage() {
       </div>
 
       {/* ── Right panel ── */}
-      <div className="flex-1 flex flex-col justify-center px-8 sm:px-14 lg:px-16 py-12 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-10 overflow-y-auto relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-tan/4 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="relative w-full max-w-sm mx-auto">
           <div className="lg:hidden mb-8">
-            <Link href="/" className="font-playfair text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
+            <Link href="/" className="font-dm text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
           </div>
 
           <Link href="/" className="inline-flex items-center gap-1.5 font-dm text-xs text-linen-cream/25 hover:text-amber-tan transition-colors mb-10 group">
@@ -154,7 +177,7 @@ export default function AuthPage() {
                       initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5 }} />
                   </svg>
                 </div>
-                <h1 className="font-playfair text-4xl text-linen-cream mb-2">Check your email.</h1>
+                <h1 className="font-dm text-4xl text-linen-cream mb-2">Check your email.</h1>
                 <p className="font-dm text-linen-cream/40 text-sm mb-8 leading-relaxed">
                   We sent a confirmation link to <span className="text-amber-tan">{form.email}</span>. Click it to activate your account.
                 </p>
@@ -167,7 +190,7 @@ export default function AuthPage() {
               <motion.div key={tab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
 
-                <h1 className="font-playfair text-4xl text-linen-cream mb-1">
+                <h1 className="font-dm text-4xl text-linen-cream mb-1">
                   {tab === "signin" ? "Sign in" : "Create account"}
                 </h1>
                 <p className="font-dm text-sm text-linen-cream/35 mb-8">

@@ -32,7 +32,7 @@ export default function ShippingPage() {
     <>
       <Navbar />
       <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-playfair text-5xl md:text-6xl text-charcoal mb-4">Shipping & Returns</h1>
+        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">Shipping & Returns</h1>
         <p className="font-dm text-charcoal/50 text-lg max-w-md mx-auto">
           Fast delivery across Nigeria. Hassle-free returns within 30 days.
         </p>
@@ -43,7 +43,7 @@ export default function ShippingPage() {
         {/* Delivery tables */}
         {sections.map((s) => (
           <section key={s.title}>
-            <h2 className="font-playfair text-2xl text-charcoal mb-6">{s.title}</h2>
+            <h2 className="font-dm text-2xl text-charcoal mb-6">{s.title}</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm font-dm border-collapse">
                 <thead>
@@ -69,7 +69,7 @@ export default function ShippingPage() {
 
         {/* Notes */}
         <section className="bg-white border border-linen-cream rounded-sm p-7 space-y-3">
-          <h2 className="font-playfair text-xl text-charcoal">Important Notes</h2>
+          <h2 className="font-dm text-xl text-charcoal">Important Notes</h2>
           <ul className="font-dm text-sm text-charcoal/65 space-y-2 list-disc list-inside leading-relaxed">
             <li>Orders placed before 2pm on weekdays are dispatched same day.</li>
             <li>Weekend orders are processed the next business day.</li>
@@ -80,15 +80,15 @@ export default function ShippingPage() {
 
         {/* Returns */}
         <section>
-          <h2 className="font-playfair text-2xl text-charcoal mb-2">Returns Policy</h2>
+          <h2 className="font-dm text-2xl text-charcoal mb-2">Returns Policy</h2>
           <p className="font-dm text-charcoal/55 text-sm mb-10 leading-relaxed">
             We accept returns within <strong className="text-charcoal font-semibold">30 days</strong> of delivery for items that are unworn, unwashed, and in original condition with tags attached. Sale items and underwear are non-returnable.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {returnSteps.map((step) => (
               <div key={step.n} className="bg-white border border-linen-cream rounded-sm p-6 space-y-2">
-                <span className="font-playfair text-3xl text-amber-tan">{step.n}</span>
-                <p className="font-playfair text-lg text-charcoal">{step.title}</p>
+                <span className="font-dm text-3xl text-amber-tan">{step.n}</span>
+                <p className="font-dm text-lg text-charcoal">{step.title}</p>
                 <p className="font-dm text-sm text-charcoal/60 leading-relaxed">{step.body}</p>
               </div>
             ))}
@@ -97,7 +97,7 @@ export default function ShippingPage() {
 
         {/* Refund types */}
         <section className="bg-obsidian text-linen-cream rounded-sm p-8 space-y-5">
-          <h2 className="font-playfair text-2xl">Refund Options</h2>
+          <h2 className="font-dm text-2xl">Refund Options</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 font-dm text-sm">
             {[
               { label: "Original Payment", desc: "Refunded to your card or bank account within 3 – 5 business days." },

@@ -24,7 +24,7 @@ export default function BrandValues() {
             <div className="w-14 h-14 rounded-full bg-amber-tan/10 border border-amber-tan/25 flex items-center justify-center mb-6 group-hover:bg-amber-tan/20 transition-colors duration-300 shadow-amber-glow">
               <Icon size={22} className="text-amber-tan" />
             </div>
-            <h3 className="font-playfair text-xl text-linen-cream mb-3">{title}</h3>
+            <h3 className="font-dm text-xl text-linen-cream mb-3">{title}</h3>
             <p className="font-dm text-sm text-linen-cream/40 leading-relaxed max-w-xs">{desc}</p>
           </motion.div>
         ))}

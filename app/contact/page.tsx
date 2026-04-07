@@ -40,7 +40,7 @@ export default function ContactPage() {
     <>
       <Navbar />
       <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-playfair text-5xl md:text-6xl text-charcoal mb-4">Contact Us</h1>
+        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">Contact Us</h1>
         <p className="font-dm text-charcoal/50 text-lg max-w-md mx-auto">
           We&apos;d love to hear from you. Reach out and we&apos;ll get back to you shortly.
         </p>
@@ -81,7 +81,7 @@ export default function ContactPage() {
                 <div className="w-14 h-14 bg-amber-tan/10 rounded-full flex items-center justify-center">
                   <CheckCircle size={28} className="text-amber-tan" />
                 </div>
-                <h2 className="font-playfair text-2xl text-charcoal">Message Sent!</h2>
+                <h2 className="font-dm text-2xl text-charcoal">Message Sent!</h2>
                 <p className="font-dm text-sm text-charcoal/50 max-w-xs leading-relaxed">
                   Thanks for reaching out. We&apos;ll get back to you within 24 hours.
                 </p>

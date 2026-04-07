@@ -7,8 +7,8 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 
   return (
     <main className="min-h-screen bg-off-white flex flex-col items-center justify-center text-center px-6">
-      <p className="font-playfair text-[clamp(5rem,15vw,10rem)] leading-none text-obsidian/5 select-none">!</p>
-      <h1 className="font-playfair text-3xl text-charcoal -mt-4 mb-3">Something went wrong</h1>
+      <p className="font-dm text-[clamp(5rem,15vw,10rem)] leading-none text-obsidian/5 select-none">!</p>
+      <h1 className="font-dm text-3xl text-charcoal -mt-4 mb-3">Something went wrong</h1>
       <p className="font-dm text-charcoal/45 text-sm max-w-xs mb-10 leading-relaxed">
         An unexpected error occurred. Try refreshing or head back to the shop.
       </p>

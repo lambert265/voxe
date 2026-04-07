@@ -58,7 +58,7 @@ export default function WishlistPage() {
         <div className="bg-charcoal py-14 px-6">
           <div className="max-w-7xl mx-auto flex items-center gap-3">
             <Heart size={20} className="text-amber-tan" />
-            <h1 className="font-playfair text-4xl md:text-5xl text-linen-cream">Wishlist</h1>
+            <h1 className="font-dm text-4xl md:text-5xl text-linen-cream">Wishlist</h1>
             {items.length > 0 && (
               <span className="font-dm text-sm text-linen-cream/35 ml-1">
                 ({items.length} {items.length === 1 ? "item" : "items"})
@@ -71,7 +71,7 @@ export default function WishlistPage() {
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center">
               <Heart size={48} className="text-charcoal/10 mb-6" />
-              <h2 className="font-playfair text-3xl text-charcoal mb-3">Your wishlist is empty</h2>
+              <h2 className="font-dm text-3xl text-charcoal mb-3">Your wishlist is empty</h2>
               <p className="font-dm text-sm text-charcoal/40 mb-8">
                 Save pieces you love and come back to them anytime.
               </p>

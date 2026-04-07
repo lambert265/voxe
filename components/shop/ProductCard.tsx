@@ -6,12 +6,13 @@ import { Heart, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product, formatNGN } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { triggerCartToast } from "@/components/CartToast";
 
 const PRODUCT_IMAGES: Record<number, { main: string; hover: string }> = {
   // Men Clothing
   1:  { main: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&q=75",  hover: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=75"  },
   2:  { main: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=75", hover: "https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?w=600&q=75" },
-  3:  { main: "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=75",  hover: "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=600&q=75"  },
+  3:  { main: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=75",  hover: "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=600&q=75"  },
   4:  { main: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=75", hover: "https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?w=600&q=75" },
   5:  { main: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=75", hover: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600&q=75" },
   6:  { main: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=75", hover: "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&q=75" },
@@ -77,7 +78,9 @@ export { PRODUCT_IMAGES };
 export default function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   const [wished, setWished] = useState(false);
-  const [showSizes, setShowSizes] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerColor, setPickerColor] = useState(product.colors[0]);
+  const [pickerSize, setPickerSize] = useState("");
   const [added, setAdded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -88,37 +91,29 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const genderLabel: Record<string, string> = { men: "Men", women: "Women", teens: "Teens", kids: "Kids" };
 
-  // Close size picker when clicking outside
   useEffect(() => {
     function onOutside(e: MouseEvent | TouchEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setShowSizes(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShowPicker(false);
+        setPickerSize("");
+      }
     }
     document.addEventListener("mousedown", onOutside);
-    document.addEventListener("touchstart", onOutside);
+    document.addEventListener("touchend", onOutside);
     return () => {
       document.removeEventListener("mousedown", onOutside);
-      document.removeEventListener("touchstart", onOutside);
+      document.removeEventListener("touchend", onOutside);
     };
   }, []);
 
-  function handleQuickAdd(e: React.MouseEvent | React.TouchEvent) {
+  async function handleAddToCart(e: React.MouseEvent | React.TouchEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (product.sizes.length === 1) {
-      // Only one size — add directly
-      add({ id: product.id, name: product.name, price: product.price, size: product.sizes[0], color: product.colors[0], bg: product.bg });
-      setAdded(true);
-      setTimeout(() => setAdded(false), 1500);
-    } else {
-      setShowSizes((v) => !v);
-    }
-  }
-
-  function handleSelectSize(e: React.MouseEvent | React.TouchEvent, size: string) {
-    e.preventDefault();
-    e.stopPropagation();
-    add({ id: product.id, name: product.name, price: product.price, size, color: product.colors[0], bg: product.bg });
-    setShowSizes(false);
+    if (!pickerSize) return;
+    await add({ id: product.id, name: product.name, price: product.price, size: pickerSize, color: pickerColor, bg: product.bg });
+    triggerCartToast({ name: product.name, size: pickerSize, color: pickerColor });
+    setShowPicker(false);
+    setPickerSize("");
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
@@ -132,65 +127,82 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <Link href={`/product/${product.id}`}>
         <div className="relative aspect-[3/4] overflow-hidden mb-4 bg-stone-100">
-          <Image
-            src={imgs.main}
-            alt={product.name}
-            fill
-            sizes="(max-width:768px) 50vw, 33vw"
-            className="object-cover object-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.04]"
-          />
-          <Image
-            src={imgs.hover}
-            alt={`${product.name} — alternate view`}
-            fill
-            sizes="(max-width:768px) 50vw, 33vw"
-            className="object-cover object-center opacity-0 scale-100 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.03]"
-          />
+          <Image src={imgs.main} alt={product.name} fill sizes="(max-width:768px) 50vw, 33vw"
+            className="object-cover object-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-[1.04]" />
+          <Image src={imgs.hover} alt="" fill sizes="(max-width:768px) 50vw, 33vw"
+            className="object-cover object-center opacity-0 scale-100 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.03]" />
 
           {product.tag && (
             <span className="absolute top-3 left-3 bg-obsidian text-linen-cream font-dm text-[9px] tracking-[0.18em] uppercase px-2.5 py-1 z-10">
               {product.tag}
             </span>
           )}
-          <button
-            onClick={(e) => { e.preventDefault(); setWished(!wished); }}
+          <button onClick={(e) => { e.preventDefault(); setWished(!wished); }}
             aria-label="Add to wishlist"
-            className="absolute top-3 right-3 w-8 h-8 bg-white/85 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-amber-tan z-10"
-          >
+            className="absolute top-3 right-3 w-8 h-8 bg-white/85 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-amber-tan z-10">
             <Heart size={13} className={wished ? "fill-obsidian text-obsidian" : "text-obsidian"} />
           </button>
 
-          {/* Size picker popup */}
+          {/* Variation picker */}
           <AnimatePresence>
-            {showSizes && (
+            {showPicker && (
               <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
                 transition={{ duration: 0.15 }}
-                className="absolute bottom-12 left-0 right-0 z-20 bg-obsidian border-t border-amber-tan/20 px-3 py-3"
+                className="absolute bottom-12 left-0 right-0 z-20 bg-obsidian border-t border-amber-tan/20 px-3 py-3 space-y-3"
+                onClick={(e) => e.preventDefault()}
               >
-                <p className="font-dm text-[9px] text-linen-cream/40 uppercase tracking-widest mb-2">Select size</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s}
-                      onClick={(e) => handleSelectSize(e, s)}
-                      onTouchEnd={(e) => handleSelectSize(e, s)}
-                      className="font-dm text-[10px] px-2.5 py-1.5 border border-white/15 text-linen-cream/70 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan transition-colors"
-                    >
-                      {s}
-                    </button>
-                  ))}
+                {/* Color */}
+                {product.colors.length > 1 && (
+                  <div>
+                    <p className="font-dm text-[9px] text-linen-cream/40 uppercase tracking-widest mb-1.5">Color: <span className="text-amber-tan">{pickerColor}</span></p>
+                    <div className="flex gap-1.5">
+                      {product.colors.map((c) => (
+                        <button key={c} title={c}
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPickerColor(c); }}
+                          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setPickerColor(c); }}
+                          className={`w-5 h-5 rounded-full border-2 transition-all ${pickerColor === c ? "border-amber-tan scale-110" : "border-transparent"}`}
+                          style={{ backgroundColor: COLOR_HEX[c] ?? "#ccc" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Size */}
+                <div>
+                  <p className="font-dm text-[9px] text-linen-cream/40 uppercase tracking-widest mb-1.5">Size</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.sizes.map((s) => (
+                      <button key={s}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPickerSize(s); }}
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setPickerSize(s); }}
+                        className={`font-dm text-[10px] px-2.5 py-1.5 border transition-colors ${
+                          pickerSize === s
+                            ? "bg-amber-tan text-obsidian border-amber-tan"
+                            : "border-white/15 text-linen-cream/70 hover:border-amber-tan"
+                        }`}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                {/* Add button */}
+                <button
+                  disabled={!pickerSize}
+                  onClick={handleAddToCart}
+                  onTouchEnd={handleAddToCart}
+                  className="w-full py-2 bg-amber-tan text-obsidian font-dm font-semibold text-[10px] tracking-[0.15em] uppercase disabled:opacity-40 disabled:cursor-not-allowed hover:bg-linen-cream transition-colors"
+                >
+                  {pickerSize ? `Add to Cart` : "Select a size"}
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Quick Add button — visible on hover (desktop) and always on mobile */}
+          {/* Quick Add button */}
           <button
-            onClick={handleQuickAdd}
-            onTouchEnd={handleQuickAdd}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowPicker((v) => !v); }}
+            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setShowPicker((v) => !v); }}
             aria-label="Quick add"
             className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian text-linen-cream font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 z-10
               sm:translate-y-full sm:group-hover:translate-y-0 sm:transition-transform sm:duration-300"

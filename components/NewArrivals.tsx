@@ -19,32 +19,48 @@ const IMGS: Record<number, string> = {
   24: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=75",
   19: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=75",
   9:  "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=600&q=75",
-  3:  "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=600&q=75",
+  3:  "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=75",
   23: "https://images.unsplash.com/photo-1515347619252-60a4bf4fff4f?w=600&q=75",
   15: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=75",
   10: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&q=75",
 };
 
+const COLOR_HEX: Record<string, string> = {
+  Black: "#1a1a1a", White: "#f5f5f5", Tan: "#B5906A", Cream: "#F0E6D3",
+  Navy: "#1B2A4A", Olive: "#6B6B3A", Rust: "#A0522D", Grey: "#9E9E9E",
+};
+
 function ProductCard({ p }: { p: typeof products[0] }) {
   const { add } = useCart();
   const { toggle, has } = useWishlist();
-  const [showSizes, setShowSizes] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerColor, setPickerColor] = useState(p.colors[0]);
+  const [pickerSize, setPickerSize] = useState("");
   const [added, setAdded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setShowSizes(false);
+    function onOutside(e: MouseEvent | TouchEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShowPicker(false);
+        setPickerSize("");
+      }
     }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("mousedown", onOutside);
+    document.addEventListener("touchend", onOutside);
+    return () => {
+      document.removeEventListener("mousedown", onOutside);
+      document.removeEventListener("touchend", onOutside);
+    };
   }, []);
 
-  function handleSelectSize(e: React.MouseEvent, size: string) {
+  function handleAdd(e: React.MouseEvent | React.TouchEvent) {
     e.preventDefault(); e.stopPropagation();
-    add({ id: p.id, name: p.name, price: p.price, size, color: p.colors[0], bg: p.bg });
-    triggerCartToast({ name: p.name, size, color: p.colors[0] });
-    setShowSizes(false);
+    if (!pickerSize) return;
+    add({ id: p.id, name: p.name, price: p.price, size: pickerSize, color: pickerColor, bg: p.bg });
+    triggerCartToast({ name: p.name, size: pickerSize, color: pickerColor });
+    setShowPicker(false);
+    setPickerSize("");
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
@@ -56,38 +72,86 @@ function ProductCard({ p }: { p: typeof products[0] }) {
           <Image src={IMGS[p.id]} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw"
             className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.05]" />
         </Link>
+
         {p.tag && (
           <span className="absolute top-3 left-3 bg-amber-tan text-obsidian px-2.5 py-1 rounded-full font-dm text-[9px] tracking-[0.15em] uppercase z-10 pointer-events-none font-semibold">
             {p.tag}
           </span>
         )}
+
         <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(p.id); }}
           className="absolute top-3 right-3 w-8 h-8 glass-dark rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
           <Heart size={13} className={has(p.id) ? "fill-amber-tan text-amber-tan" : "text-linen-cream/60"} />
         </button>
-        <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowSizes((v) => !v); }}
-          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setShowSizes((v) => !v); }}
-          className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian/90 border-t border-amber-tan/20 text-amber-tan font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 z-10 sm:translate-y-full sm:group-hover:translate-y-0 sm:transition-transform sm:duration-300">
-          {added ? "Added ✓" : "Quick Add"}
-        </button>
+
+        {/* Variation picker */}
         <AnimatePresence>
-          {showSizes && (
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.18 }}
-              className="absolute bottom-12 left-0 right-0 z-20 bg-obsidian border border-amber-tan/20 px-3 py-3">
-              <p className="font-dm text-[9px] text-amber-tan/60 uppercase tracking-widest mb-2">Select size</p>
-              <div className="flex flex-wrap gap-1.5">
-                {p.sizes.map((s) => (
-                  <button key={s} onClick={(e) => handleSelectSize(e, s)} onTouchEnd={(e) => handleSelectSize(e, s)}
-                    className="font-dm text-[10px] px-2.5 py-1.5 border border-amber-tan/25 text-linen-cream/70 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan transition-colors">
-                    {s}
-                  </button>
-                ))}
+          {showPicker && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.18 }}
+              className="absolute bottom-12 left-0 right-0 z-20 bg-obsidian border border-amber-tan/20 px-3 py-3 space-y-3"
+              onClick={(e) => e.preventDefault()}
+            >
+              {/* Color picker */}
+              {p.colors.length > 1 && (
+                <div>
+                  <p className="font-dm text-[9px] text-amber-tan/60 uppercase tracking-widest mb-1.5">
+                    Color: <span className="text-amber-tan">{pickerColor}</span>
+                  </p>
+                  <div className="flex gap-1.5">
+                    {p.colors.map((c) => (
+                      <button key={c} title={c}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPickerColor(c); }}
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setPickerColor(c); }}
+                        className={`w-5 h-5 rounded-full border-2 transition-all ${pickerColor === c ? "border-amber-tan scale-110" : "border-transparent"}`}
+                        style={{ backgroundColor: COLOR_HEX[c] ?? "#ccc" }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Size picker */}
+              <div>
+                <p className="font-dm text-[9px] text-amber-tan/60 uppercase tracking-widest mb-1.5">Size</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {p.sizes.map((s) => (
+                    <button key={s}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPickerSize(s); }}
+                      onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setPickerSize(s); }}
+                      className={`font-dm text-[10px] px-2.5 py-1.5 border transition-colors ${
+                        pickerSize === s
+                          ? "bg-amber-tan text-obsidian border-amber-tan"
+                          : "border-amber-tan/25 text-linen-cream/70 hover:bg-amber-tan hover:text-obsidian hover:border-amber-tan"
+                      }`}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* Add to cart */}
+              <button
+                disabled={!pickerSize}
+                onClick={handleAdd}
+                className="w-full py-2 bg-amber-tan text-obsidian font-dm font-semibold text-[10px] tracking-[0.15em] uppercase disabled:opacity-40 disabled:cursor-not-allowed hover:bg-linen-cream transition-colors"
+              >
+                {pickerSize ? "Add to Cart" : "Select a size"}
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Quick Add button */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowPicker((v) => !v); }}
+          onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setShowPicker((v) => !v); }}
+          className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-obsidian/90 border-t border-amber-tan/20 text-amber-tan font-dm text-[10px] tracking-[0.18em] uppercase py-3.5 z-10 sm:translate-y-full sm:group-hover:translate-y-0 sm:transition-transform sm:duration-300">
+          {added ? "Added ✓" : "Quick Add"}
+        </button>
       </div>
+
       <Link href={`/product/${p.id}`}>
         <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.18em] mb-1 capitalize">{p.gender} · {p.type}</p>
         <h3 className="font-dm text-sm font-medium text-linen-cream group-hover:text-amber-tan transition-colors duration-200 mb-1 leading-snug">{p.name}</h3>
@@ -105,7 +169,7 @@ export default function NewArrivals() {
           className="flex items-end justify-between mb-14">
           <div>
             <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-2">Just Dropped</p>
-            <h2 className="font-playfair text-4xl md:text-5xl text-linen-cream">New Arrivals</h2>
+            <h2 className="font-dm text-4xl md:text-5xl text-linen-cream">New Arrivals</h2>
           </div>
           <Link href="/shop?sort=newest" className="hidden sm:flex items-center gap-1.5 font-dm text-xs text-linen-cream/35 hover:text-amber-tan transition-colors duration-200">
             View All <ArrowRight size={12} />

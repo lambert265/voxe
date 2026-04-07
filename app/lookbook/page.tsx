@@ -161,7 +161,7 @@ function LookbookCard({ entry, index }: { entry: Entry; index: number }) {
       <div className="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/55 transition-colors duration-350 pointer-events-none group-hover:pointer-events-auto">
         {/* Top: title + date */}
         <div className="absolute top-5 left-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
-          <h3 className="font-playfair text-linen-cream text-2xl leading-tight mb-1.5">
+          <h3 className="font-dm text-linen-cream text-2xl leading-tight mb-1.5">
             {entry.collection}
           </h3>
           <p className="font-dm text-linen-cream/55 text-[11px] tracking-[0.25em] uppercase">
@@ -208,7 +208,7 @@ export default function LookbookPage() {
           <motion.h1
             initial={hidden}
             animate={visibleFadeUp(0.08)}
-            className="font-playfair text-[clamp(3.5rem,9vw,7rem)] text-linen-cream leading-none mb-5"
+            className="font-dm text-[clamp(3.5rem,9vw,7rem)] text-linen-cream leading-none mb-5"
           >
             The Edit
           </motion.h1>

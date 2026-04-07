@@ -41,7 +41,7 @@ export default function TrackOrderPage() {
     <>
       <Navbar />
       <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-playfair text-5xl md:text-6xl text-charcoal mb-4">Track Your Order</h1>
+        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">Track Your Order</h1>
         <p className="font-dm text-charcoal/50 text-lg max-w-md mx-auto">
           Enter your order number to see real-time delivery status.
         </p>
@@ -81,7 +81,7 @@ export default function TrackOrderPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-1">Order Number</p>
-                  <p className="font-playfair text-xl text-charcoal">{input.trim().toUpperCase()}</p>
+                  <p className="font-dm text-xl text-charcoal">{input.trim().toUpperCase()}</p>
                 </div>
                 <span className={`font-dm text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full ${
                   result.status === "delivered" ? "bg-emerald-50 text-emerald-600" :

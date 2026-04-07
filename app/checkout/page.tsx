@@ -155,7 +155,7 @@ export default function CheckoutPage() {
               {/* Step 0 — Delivery */}
               {step === 0 && (
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                  <h2 className="font-playfair text-2xl text-charcoal mb-7">Delivery Details</h2>
+                  <h2 className="font-dm text-2xl text-charcoal mb-7">Delivery Details</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <Field label="Full Name" error={errors.name}>
                       <input value={form.name} onChange={(e) => set("name", e.target.value)}
@@ -201,7 +201,7 @@ export default function CheckoutPage() {
               {/* Step 1 — Payment */}
               {step === 1 && (
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                  <h2 className="font-playfair text-2xl text-charcoal mb-7">Payment Method</h2>
+                  <h2 className="font-dm text-2xl text-charcoal mb-7">Payment Method</h2>
                   <div className="space-y-3">
                     {PAYMENT_OPTIONS.map((opt) => (
                       <button key={opt.id} onClick={() => setPayMethod(opt.id)}
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
               {/* Step 2 — Confirm */}
               {step === 2 && (
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                  <h2 className="font-playfair text-2xl text-charcoal mb-7">Review Your Order</h2>
+                  <h2 className="font-dm text-2xl text-charcoal mb-7">Review Your Order</h2>
 
                   {/* Delivery summary */}
                   <div className="bg-white border border-charcoal/10 rounded-sm p-5 mb-5">
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
             {/* Right — sticky order summary */}
             <div className="flex-[40] min-w-0">
               <div className="sticky top-[88px] bg-obsidian text-linen-cream rounded-xl p-6 space-y-5">
-                <h2 className="font-playfair text-xl">Your Order</h2>
+                <h2 className="font-dm text-xl">Your Order</h2>
 
                 {/* Items */}
                 <div className="space-y-4 max-h-64 overflow-y-auto no-scrollbar">

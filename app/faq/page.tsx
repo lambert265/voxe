@@ -68,7 +68,7 @@ export default function FAQPage() {
     <>
       <Navbar />
       <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-playfair text-5xl md:text-6xl text-charcoal mb-4">FAQs</h1>
+        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">FAQs</h1>
         <p className="font-dm text-charcoal/50 text-lg max-w-md mx-auto">
           Everything you need to know about VOXE.
         </p>
@@ -103,7 +103,7 @@ export default function FAQPage() {
 
         {/* Still need help */}
         <div className="mt-16 bg-obsidian text-linen-cream rounded-sm p-10 text-center space-y-4">
-          <h2 className="font-playfair text-2xl">Still have questions?</h2>
+          <h2 className="font-dm text-2xl">Still have questions?</h2>
           <p className="font-dm text-sm text-linen-cream/50">Our team is available Monday – Saturday, 9am – 6pm WAT.</p>
           <a
             href="/contact"

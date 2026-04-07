@@ -106,7 +106,7 @@ export default function AdminOrders() {
           <div className="py-20 text-center font-dm text-sm text-linen-cream/30">Loading orders…</div>
         ) : filtered.length === 0 ? (
           <div className="py-20 text-center">
-            <p className="font-playfair text-2xl text-linen-cream/20 mb-2">No orders yet</p>
+            <p className="font-dm text-2xl text-linen-cream/20 mb-2">No orders yet</p>
             <p className="font-dm text-sm text-linen-cream/20">Orders will appear here once customers checkout.</p>
           </div>
         ) : (
@@ -155,7 +155,7 @@ export default function AdminOrders() {
             <div className="flex items-center justify-between px-6 py-5 border-b border-amber-tan/10 sticky top-0 bg-[#0D0B06] z-10">
               <div>
                 <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest">Order Detail</p>
-                <h3 className="font-playfair text-xl text-linen-cream mt-0.5">{shortId(selected.id)}</h3>
+                <h3 className="font-dm text-xl text-linen-cream mt-0.5">{shortId(selected.id)}</h3>
               </div>
               <button onClick={() => setSelected(null)} className="text-linen-cream/30 hover:text-linen-cream transition-colors"><X size={18} /></button>
             </div>
@@ -189,7 +189,7 @@ export default function AdminOrders() {
                 </div>
                 <div className="flex justify-between items-center mt-3 pt-3 border-t border-amber-tan/10">
                   <span className="font-dm text-sm font-semibold text-linen-cream">Total</span>
-                  <span className="font-playfair text-xl text-amber-tan">{formatNGN(selected.total)}</span>
+                  <span className="font-dm text-xl text-amber-tan">{formatNGN(selected.total)}</span>
                 </div>
               </div>
 

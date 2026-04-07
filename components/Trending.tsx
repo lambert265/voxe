@@ -22,7 +22,7 @@ export default function Trending() {
         className="max-w-7xl mx-auto px-6 mb-12 flex items-end justify-between">
         <div>
           <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-2">What&apos;s Hot</p>
-          <h2 className="font-playfair text-4xl md:text-5xl text-linen-cream">Trending Now</h2>
+          <h2 className="font-dm text-4xl md:text-5xl text-linen-cream">Trending Now</h2>
         </div>
         <div className="hidden sm:flex items-center gap-2 glass-dark px-4 py-2 rounded-full">
           <TrendingUp size={13} className="text-amber-tan" />

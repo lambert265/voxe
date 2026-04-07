@@ -21,7 +21,7 @@ export default function Newsletter() {
             </div>
           </div>
           <p className="font-dm text-amber-tan text-[10px] tracking-[0.4em] uppercase mb-4">Join the Circle</p>
-          <h2 className="font-playfair text-4xl md:text-5xl text-linen-cream mb-4 leading-tight">
+          <h2 className="font-dm text-4xl md:text-5xl text-linen-cream mb-4 leading-tight">
             Get 10% off your<br />
             <em className="not-italic bg-amber-gradient bg-clip-text text-transparent">first order.</em>
           </h2>
@@ -31,7 +31,7 @@ export default function Newsletter() {
           {submitted ? (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="py-4 flex flex-col items-center gap-2">
               <Sparkles size={24} className="text-amber-tan" />
-              <p className="font-playfair text-2xl text-linen-cream italic">Welcome to VOXE.</p>
+              <p className="font-dm text-2xl text-linen-cream italic">Welcome to VOXE.</p>
               <p className="font-dm text-sm text-linen-cream/40 mt-1">Check your inbox for your 10% discount code.</p>
             </motion.div>
           ) : (

@@ -14,7 +14,7 @@ export default function FeaturedCollection() {
             <span className="w-1 h-1 rounded-full bg-amber-tan" />
             Featured Collection
           </span>
-          <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl text-linen-cream leading-[0.93] mb-7">
+          <h2 className="font-dm text-5xl md:text-6xl lg:text-7xl text-linen-cream leading-[0.93] mb-7">
             The Dark<br />
             <em className="not-italic bg-amber-gradient bg-clip-text text-transparent">Meridian</em><br />
             Edit

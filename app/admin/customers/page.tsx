@@ -92,10 +92,10 @@ export default function AdminCustomers() {
               {/* Avatar + name */}
               <div className="flex flex-col items-center text-center gap-3">
                 <div className="w-16 h-16 rounded-full bg-amber-tan/15 border-2 border-amber-tan/30 flex items-center justify-center">
-                  <span className="font-playfair text-2xl text-amber-tan">{initials(selected.name)}</span>
+                  <span className="font-dm text-2xl text-amber-tan">{initials(selected.name)}</span>
                 </div>
                 <div>
-                  <h3 className="font-playfair text-xl text-linen-cream">{selected.name}</h3>
+                  <h3 className="font-dm text-xl text-linen-cream">{selected.name}</h3>
                   <p className="font-dm text-xs text-linen-cream/35 mt-0.5">Customer since {selected.joined}</p>
                 </div>
               </div>
@@ -103,11 +103,11 @@ export default function AdminCustomers() {
               {/* Stats */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="card-gloss rounded-xl p-4 text-center">
-                  <p className="font-playfair text-2xl text-amber-tan">{selected.orders}</p>
+                  <p className="font-dm text-2xl text-amber-tan">{selected.orders}</p>
                   <p className="font-dm text-[10px] text-linen-cream/35 uppercase tracking-widest mt-1">Orders</p>
                 </div>
                 <div className="card-gloss rounded-xl p-4 text-center">
-                  <p className="font-playfair text-lg text-amber-tan">{formatNGN(selected.spent)}</p>
+                  <p className="font-dm text-lg text-amber-tan">{formatNGN(selected.spent)}</p>
                   <p className="font-dm text-[10px] text-linen-cream/35 uppercase tracking-widest mt-1">Total Spent</p>
                 </div>
               </div>

@@ -76,7 +76,7 @@ function ShopInner({ slug }: { slug: string[] }) {
       <div className="bg-obsidian py-14 px-6">
         <div className="max-w-7xl mx-auto">
           <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-2">VOXE</p>
-          <h1 className="font-playfair text-4xl md:text-5xl text-linen-cream">{label}</h1>
+          <h1 className="font-dm text-4xl md:text-5xl text-linen-cream">{label}</h1>
         </div>
       </div>
 
@@ -118,7 +118,7 @@ function ShopInner({ slug }: { slug: string[] }) {
               <SkeletonGrid />
             ) : pageItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-32 text-center">
-                <span className="font-playfair text-7xl italic text-obsidian/8 mb-5">V</span>
+                <span className="font-dm text-7xl italic text-obsidian/8 mb-5">V</span>
                 <p className="font-dm text-sm text-charcoal/40 mb-4">No products match your filters.</p>
                 <button
                   onClick={() => router.push(pathname, { scroll: false })}

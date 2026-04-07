@@ -64,7 +64,7 @@ export default function AdminAnalytics() {
             </div>
             <div>
               <p className="font-dm text-[10px] text-linen-cream/35 uppercase tracking-widest">{label}</p>
-              <p className="font-playfair text-2xl text-linen-cream mt-0.5">{value}</p>
+              <p className="font-dm text-2xl text-linen-cream mt-0.5">{value}</p>
               <span className="flex items-center gap-0.5 font-dm text-xs text-emerald-400 mt-0.5">
                 <ArrowUpRight size={11} />{change}%
               </span>
@@ -76,7 +76,7 @@ export default function AdminAnalytics() {
       {/* Revenue chart */}
       <div className="card-gloss rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-playfair text-xl text-linen-cream">Revenue Over Time</h3>
+          <h3 className="font-dm text-xl text-linen-cream">Revenue Over Time</h3>
           <span className="font-dm text-xs text-linen-cream/25">{period === "7d" ? "Last 7 days" : period === "30d" ? "June 2025" : "Last 90 days"}</span>
         </div>
         <div className="flex items-end gap-1 h-40 mb-2">
@@ -98,7 +98,7 @@ export default function AdminAnalytics() {
 
       {/* Orders chart */}
       <div className="card-gloss rounded-xl p-6">
-        <h3 className="font-playfair text-xl text-linen-cream mb-6">Orders Over Time</h3>
+        <h3 className="font-dm text-xl text-linen-cream mb-6">Orders Over Time</h3>
         <div className="flex items-end gap-1 h-28 mb-2">
           {ORDERS_DATA.map((v, i) => (
             <div key={i} className="flex-1 group cursor-pointer relative">
@@ -115,7 +115,7 @@ export default function AdminAnalytics() {
       <div className="grid lg:grid-cols-2 gap-4">
         {/* Top products */}
         <div className="card-gloss rounded-xl p-5">
-          <h3 className="font-playfair text-lg text-linen-cream mb-5">Top Products</h3>
+          <h3 className="font-dm text-lg text-linen-cream mb-5">Top Products</h3>
           <div className="space-y-3">
             {TOP_PRODUCTS.map((p, i) => (
               <div key={p.id} className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function AdminAnalytics() {
         {/* Breakdowns */}
         <div className="space-y-4">
           <div className="card-gloss rounded-xl p-5">
-            <h3 className="font-playfair text-lg text-linen-cream mb-4">Sales by Gender</h3>
+            <h3 className="font-dm text-lg text-linen-cream mb-4">Sales by Gender</h3>
             <div className="space-y-3">
               {GENDER_BREAKDOWN.map(({ label, pct, color }) => (
                 <div key={label}>
@@ -157,7 +157,7 @@ export default function AdminAnalytics() {
             </div>
           </div>
           <div className="card-gloss rounded-xl p-5">
-            <h3 className="font-playfair text-lg text-linen-cream mb-4">Clothing vs Footwear</h3>
+            <h3 className="font-dm text-lg text-linen-cream mb-4">Clothing vs Footwear</h3>
             <div className="space-y-3">
               {TYPE_BREAKDOWN.map(({ label, pct, color }) => (
                 <div key={label}>

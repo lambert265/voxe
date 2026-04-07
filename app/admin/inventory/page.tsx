@@ -111,7 +111,7 @@ export default function AdminInventory() {
                     </td>
                     <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/40 capitalize">{p.gender} · {p.type}</td>
                     <td className="px-5 py-3.5 font-dm text-sm text-amber-tan">{formatNGN(p.price)}</td>
-                    <td className="px-5 py-3.5 font-playfair text-xl text-linen-cream">{qty}</td>
+                    <td className="px-5 py-3.5 font-dm text-xl text-linen-cream">{qty}</td>
                     <td className="px-5 py-3.5">
                       <span className={`font-dm text-[9px] tracking-wider uppercase px-2 py-1 rounded-full border ${cls}`}>{label}</span>
                     </td>

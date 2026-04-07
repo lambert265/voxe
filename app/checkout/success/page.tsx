@@ -56,7 +56,7 @@ function SuccessContent() {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
-          <h1 className="font-playfair text-4xl text-charcoal mb-3">Order Confirmed!</h1>
+          <h1 className="font-dm text-4xl text-charcoal mb-3">Order Confirmed!</h1>
           <p className="font-dm text-charcoal/50 text-sm mb-6 leading-relaxed">
             Thank you for your order. We&apos;ve received it and will begin processing shortly.
           </p>

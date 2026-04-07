@@ -131,7 +131,7 @@ export default function NotFound() {
           className="space-y-3 mb-10"
         >
           <p className="font-dm text-amber-tan text-[11px] tracking-[0.4em] uppercase">404</p>
-          <h1 className="font-playfair text-4xl md:text-5xl text-charcoal leading-tight">
+          <h1 className="font-dm text-4xl md:text-5xl text-charcoal leading-tight">
             This page doesn&apos;t exist.
           </h1>
           <p className="font-dm text-charcoal/45 text-lg">

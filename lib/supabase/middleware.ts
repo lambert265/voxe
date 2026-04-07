@@ -39,7 +39,7 @@ export async function updateSession(request: NextRequest) {
 
     // Extra check: only allow admin role (set via Supabase user metadata)
     const isAdmin = user.user_metadata?.role === "admin" ||
-                    user.email === process.env.ADMIN_EMAIL;
+                    user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     if (!isAdmin) {
       const url = request.nextUrl.clone();
       url.pathname = "/";

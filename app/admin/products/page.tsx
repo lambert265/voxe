@@ -220,7 +220,7 @@ export default function AdminProducts() {
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 backdrop-blur-sm overflow-y-auto py-8 px-4">
           <div className="card-gloss rounded-2xl w-full max-w-2xl border border-amber-tan/15">
             <div className="flex items-center justify-between px-6 py-5 border-b border-amber-tan/10">
-              <h2 className="font-playfair text-xl text-linen-cream">{modal === "add" ? "Add Product" : "Edit Product"}</h2>
+              <h2 className="font-dm text-xl text-linen-cream">{modal === "add" ? "Add Product" : "Edit Product"}</h2>
               <button onClick={() => setModal(null)} className="text-linen-cream/30 hover:text-linen-cream transition-colors"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-5">
@@ -342,7 +342,7 @@ export default function AdminProducts() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="card-gloss rounded-2xl w-full max-w-md border border-amber-tan/15 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-playfair text-xl text-linen-cream">{selected.name}</h2>
+              <h2 className="font-dm text-xl text-linen-cream">{selected.name}</h2>
               <button onClick={() => setModal(null)} className="text-linen-cream/30 hover:text-linen-cream transition-colors"><X size={18} /></button>
             </div>
             <div className="space-y-3 font-dm text-sm">
@@ -374,7 +374,7 @@ export default function AdminProducts() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="card-gloss rounded-2xl w-full max-w-sm border border-red-500/20 p-6 text-center">
             <Trash2 size={32} className="text-red-400 mx-auto mb-4" />
-            <h3 className="font-playfair text-xl text-linen-cream mb-2">Delete Product?</h3>
+            <h3 className="font-dm text-xl text-linen-cream mb-2">Delete Product?</h3>
             <p className="font-dm text-sm text-linen-cream/40 mb-6">This action cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} className="flex-1 py-3 border border-amber-tan/20 text-linen-cream/50 font-dm text-xs uppercase tracking-widest hover:border-amber-tan/40 transition-colors rounded-sm">Cancel</button>

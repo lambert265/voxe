@@ -13,7 +13,7 @@ import { ALL_PRODUCTS, formatNGN } from "@/lib/products";
 const PRODUCT_IMAGES: Record<number, string> = {
   1:  "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=200&q=70",
   2:  "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&q=70",
-  3:  "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=200&q=70",
+  3:  "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200&q=70",
   4:  "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=200&q=70",
   5:  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=70",
   6:  "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=200&q=70",
@@ -42,109 +42,14 @@ const PRODUCT_IMAGES: Record<number, string> = {
 };
 
 const PROMO_CODES: Record<string, number> = {
-  VOXE10: 0.1,
-  VOXE20: 0.2,
-  WELCOME: 0.15,
+  VOXE10: 0.1, VOXE20: 0.2, WELCOME: 0.15,
 };
 
 const SHIPPING_COST = 3500;
 
-function OrderSummary({
-  subtotal, shipping, discount, total, appliedPromo,
-  promo, setPromo, promoStatus, setPromoStatus, applyPromo, ctaHref, ctaLabel, user,
-}: {
-  subtotal: number; shipping: number; discount: number; total: number;
-  appliedPromo: { code: string; rate: number } | null;
-  promo: string; setPromo: (v: string) => void;
-  promoStatus: "idle" | "success" | "error";
-  setPromoStatus: (v: "idle" | "success" | "error") => void;
-  applyPromo: () => void; ctaHref: string; ctaLabel: string;
-  user: { email?: string | null } | null;
-}) {
-  const [promoOpen, setPromoOpen] = useState(false);
-  return (
-    <div className="sticky top-[88px] bg-charcoal text-linen-cream rounded-xl p-6 space-y-5">
-      <h2 className="font-playfair text-xl">Order Summary</h2>
-
-      <div className="space-y-3 font-dm text-sm">
-        <div className="flex justify-between">
-          <span className="text-linen-cream/55">Subtotal</span>
-          <span>{formatNGN(subtotal)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-linen-cream/55">Shipping</span>
-          <span>{formatNGN(shipping)}</span>
-        </div>
-        {appliedPromo && (
-          <div className="flex justify-between text-emerald-400">
-            <span>Discount ({appliedPromo.code})</span>
-            <span>−{formatNGN(discount)}</span>
-          </div>
-        )}
-      </div>
-
-      <div className="border-t border-white/10 pt-4 flex justify-between items-center">
-        <span className="font-dm font-semibold text-sm">Total</span>
-        <span className="font-dm font-bold text-amber-tan text-xl">{formatNGN(total)}</span>
-      </div>
-
-      {/* Promo */}
-      <div className="space-y-2">
-        <button
-          onClick={() => setPromoOpen((v) => !v)}
-          className="font-dm text-xs text-charcoal/50 hover:text-amber-tan transition-colors flex items-center gap-1"
-        >
-          {promoOpen ? "− " : "+ "}Have a promo code?
-        </button>
-        {promoOpen && (
-          <div className="space-y-2">
-            <div className="flex gap-2">
-              <input
-                value={promo}
-                onChange={(e) => { setPromo(e.target.value); setPromoStatus("idle"); }}
-                onKeyDown={(e) => e.key === "Enter" && applyPromo()}
-                placeholder="Promo code"
-                className="flex-1 bg-white border border-charcoal/15 px-3 py-2.5 font-dm text-sm text-charcoal placeholder:text-charcoal/30 focus:outline-none focus:border-amber-tan transition-colors rounded-sm"
-              />
-              <button
-                onClick={applyPromo}
-                className="px-4 py-2 bg-amber-tan text-white font-dm font-semibold text-xs tracking-wider uppercase hover:bg-charcoal transition-colors rounded-sm"
-              >
-                Apply
-              </button>
-            </div>
-            {promoStatus === "success" && (
-              <p className="font-dm text-xs text-emerald-600">✓ {Math.round((appliedPromo?.rate ?? 0) * 100)}% discount applied</p>
-            )}
-            {promoStatus === "error" && (
-              <p className="font-dm text-xs text-red-500">✗ Invalid promo code</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      <Link
-        href={user ? ctaHref : "/auth"}
-        className="flex items-center justify-center w-full h-[52px] bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-linen-cream transition-colors duration-300 rounded-sm"
-      >
-        {user ? ctaLabel : "Sign In to Checkout"}
-      </Link>
-
-      <div className="flex items-center justify-center gap-4 pt-1">
-        <div className="flex items-center gap-1.5 text-linen-cream/30">
-          <Lock size={11} />
-          <span className="font-dm text-[11px]">Secure checkout</span>
-        </div>
-        <span className="text-linen-cream/15 text-xs">|</span>
-        <span className="font-dm text-[11px] text-linen-cream/30 font-semibold tracking-wider">Paystack</span>
-      </div>
-    </div>
-  );
-}
-
 export default function CartPage() {
   const { items, remove, update } = useCart();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [promo, setPromo] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; rate: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<"idle" | "success" | "error">("idle");
@@ -154,7 +59,6 @@ export default function CartPage() {
   const discount = appliedPromo ? Math.round(subtotal * appliedPromo.rate) : 0;
   const total = subtotal + shipping - discount;
 
-  // Upsell: products not already in cart
   const cartIds = new Set(items.map((i) => i.id));
   const upsell = ALL_PRODUCTS.filter((p) => !cartIds.has(p.id)).slice(0, 4);
 
@@ -165,25 +69,25 @@ export default function CartPage() {
     else { setAppliedPromo(null); setPromoStatus("error"); }
   }
 
+  const checkoutHref = !loading && user ? "/checkout" : "/auth";
+  const checkoutLabel = !loading && user ? "Proceed to Checkout" : "Sign In to Checkout";
+
   if (items.length === 0) {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-obsidian flex flex-col items-center justify-center gap-5 pt-[68px]">
-          <div className="card-gloss rounded-2xl p-14 flex flex-col items-center gap-5 text-center">
-            <svg width="64" height="64" viewBox="0 0 80 80" fill="none" className="opacity-20">
-              <rect x="10" y="26" width="60" height="46" rx="4" stroke="#F0E6D3" strokeWidth="2.5" />
-              <path d="M26 26V22a14 14 0 0 1 28 0v4" stroke="#F0E6D3" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="30" cy="44" r="3" fill="#F0E6D3" />
-              <circle cx="50" cy="44" r="3" fill="#F0E6D3" />
-            </svg>
-            <h2 className="font-playfair text-3xl text-linen-cream">Your cart is empty</h2>
-            <p className="font-dm text-linen-cream/35 text-sm">Looks like you haven&apos;t added anything yet.</p>
-            <Link href="/shop"
-              className="mt-2 btn-amber sheen px-10 py-4 text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm">
-              Start Shopping
-            </Link>
-          </div>
+        <main className="min-h-screen bg-obsidian flex flex-col items-center justify-center gap-5 pt-[68px] px-6">
+          <svg width="64" height="64" viewBox="0 0 80 80" fill="none" className="opacity-20">
+            <rect x="10" y="26" width="60" height="46" rx="4" stroke="#F0E6D3" strokeWidth="2.5" />
+            <path d="M26 26V22a14 14 0 0 1 28 0v4" stroke="#F0E6D3" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="30" cy="44" r="3" fill="#F0E6D3" />
+            <circle cx="50" cy="44" r="3" fill="#F0E6D3" />
+          </svg>
+          <h2 className="font-dm text-3xl text-linen-cream">Your cart is empty</h2>
+          <p className="font-dm text-linen-cream/35 text-sm">Looks like you haven&apos;t added anything yet.</p>
+          <Link href="/shop" className="mt-2 px-10 py-4 bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm">
+            Start Shopping
+          </Link>
         </main>
         <Footer />
       </>
@@ -194,15 +98,20 @@ export default function CartPage() {
     <>
       <Navbar />
       <main className="min-h-screen bg-obsidian pt-[68px]">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="font-playfair text-4xl text-linen-cream mb-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="font-dm text-3xl sm:text-4xl text-linen-cream mb-8"
+          >
             Shopping Cart
-            <span className="font-dm text-base text-linen-cream/25 ml-3 font-normal">({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
+            <span className="font-dm text-sm text-linen-cream/25 ml-3 font-normal">
+              ({items.reduce((s, i) => s + i.quantity, 0)} items)
+            </span>
           </motion.h1>
 
-          <div className="flex flex-col lg:flex-row gap-10 pb-24 lg:pb-0">
-            {/* Left — cart items */}
+          <div className="flex flex-col lg:flex-row gap-8">
+
+            {/* ── Cart items ── */}
             <div className="flex-[65] min-w-0">
               <AnimatePresence initial={false}>
                 {items.map((item) => (
@@ -210,69 +119,103 @@ export default function CartPage() {
                     key={`${item.id}-${item.size}-${item.color}`}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="relative flex gap-5 py-6 border-b border-white/6 overflow-hidden"
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden"
                   >
-                    <div className="w-20 h-24 shrink-0 overflow-hidden bg-charcoal-2 rounded-sm ring-1 ring-white/8">
-                      {PRODUCT_IMAGES[item.id] ? (
-                        <Image
-                          src={PRODUCT_IMAGES[item.id]}
-                          alt={item.name}
-                          width={80}
-                          height={80}
-                          className="w-full h-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className={`w-full h-full ${item.bg} flex items-center justify-center`}>
-                          <ShoppingBag size={20} className="text-charcoal/25" />
-                        </div>
-                      )}
-                    </div>
+                    <div className="flex gap-4 py-5 border-b border-white/8">
+                      {/* Image */}
+                      <div className="w-20 h-24 shrink-0 rounded-sm overflow-hidden bg-white/5">
+                        {PRODUCT_IMAGES[item.id] ? (
+                          <Image
+                            src={PRODUCT_IMAGES[item.id]}
+                            alt=""
+                            width={80}
+                            height={96}
+                            className="w-full h-full object-cover object-center"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingBag size={20} className="text-white/20" />
+                          </div>
+                        )}
+                      </div>
 
-                      <div className="flex-1 min-w-0 pr-6">
-                        <p className="font-dm font-medium text-linen-cream text-[15px] leading-snug">{item.name}</p>
-                        <p className="font-dm text-linen-cream/35 text-xs mt-1 tracking-wide">Size: {item.size} &nbsp;·&nbsp; Color: {item.color}</p>
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="font-dm font-medium text-linen-cream text-sm leading-snug">{item.name}</p>
+                          <button
+                            onClick={() => remove(item.id, item.size, item.color)}
+                            className="shrink-0 text-linen-cream/20 hover:text-red-400 transition-colors mt-0.5"
+                            aria-label="Remove"
+                          >
+                            <X size={15} />
+                          </button>
+                        </div>
+
+                        <p className="font-dm text-linen-cream/35 text-xs mt-1">
+                          {item.size} · {item.color}
+                        </p>
+
                         <div className="flex items-center justify-between mt-4">
-                          <div className="flex items-center glass-dark rounded-full overflow-hidden">
-                            <button onClick={() => update(item.id, item.size, item.color, item.quantity - 1)}
-                              className="w-8 h-8 flex items-center justify-center text-linen-cream/50 hover:text-amber-tan transition-colors">
+                          {/* Stepper */}
+                          <div className="flex items-center border border-white/10 rounded-sm">
+                            <button
+                              onClick={() => update(item.id, item.size, item.color, item.quantity - 1)}
+                              className="w-8 h-8 flex items-center justify-center text-linen-cream/40 hover:text-amber-tan transition-colors"
+                            >
                               <Minus size={12} />
                             </button>
-                            <span className="w-8 text-center font-dm text-sm text-linen-cream select-none">{item.quantity}</span>
-                            <button onClick={() => update(item.id, item.size, item.color, item.quantity + 1)}
-                              className="w-8 h-8 flex items-center justify-center text-linen-cream/50 hover:text-amber-tan transition-colors">
+                            <span className="w-8 text-center font-dm text-sm text-linen-cream select-none">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => update(item.id, item.size, item.color, item.quantity + 1)}
+                              className="w-8 h-8 flex items-center justify-center text-linen-cream/40 hover:text-amber-tan transition-colors"
+                            >
                               <Plus size={12} />
                             </button>
                           </div>
-                          <p className="font-dm font-semibold text-linen-cream text-[15px]">{formatNGN(item.price * item.quantity)}</p>
-                        </div>
-                      </div>
 
-                    <button onClick={() => remove(item.id, item.size, item.color)}
-                      className="absolute top-6 right-0 text-linen-cream/20 hover:text-red-400 transition-colors" aria-label="Remove item">
-                      <X size={15} />
-                    </button>
+                          <p className="font-dm font-semibold text-linen-cream text-sm">
+                            {formatNGN(item.price * item.quantity)}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => remove(item.id, item.size, item.color)}
+                          className="mt-2 font-dm text-xs text-linen-cream/20 hover:text-red-400 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
 
-              <Link href="/shop" className="inline-block mt-7 font-dm text-xs text-amber-tan/70 hover:text-amber-tan transition-colors tracking-widest uppercase">
+              <Link href="/shop" className="inline-block mt-6 font-dm text-xs text-amber-tan/60 hover:text-amber-tan transition-colors tracking-widest uppercase">
                 ← Continue Shopping
               </Link>
 
+              {/* You May Also Like */}
               {upsell.length > 0 && (
-                <div className="mt-14">
-                  <p className="font-playfair text-2xl text-linen-cream mb-6">You May Also Like</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="mt-12">
+                  <p className="font-dm text-xl text-linen-cream mb-5">You May Also Like</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {upsell.map((p) => (
                       <Link key={p.id} href={`/product/${p.id}`} className="group">
-                        <div className="relative aspect-[3/4] overflow-hidden mb-2 bg-charcoal-2 rounded-sm ring-1 ring-white/5">
-                          <Image src={PRODUCT_IMAGES[p.id] ?? ""} alt={p.name} fill sizes="(max-width:640px) 50vw, 25vw"
-                            className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.05]" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-obsidian/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="relative aspect-[3/4] overflow-hidden mb-2 bg-white/5 rounded-sm">
+                          <Image
+                            src={PRODUCT_IMAGES[p.id] ?? ""}
+                            alt={p.name}
+                            fill
+                            sizes="(max-width:640px) 50vw, 25vw"
+                            className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.05]"
+                          />
                         </div>
-                        <p className="font-dm text-xs font-medium text-linen-cream group-hover:text-amber-tan transition-colors leading-snug truncate">{p.name}</p>
+                        <p className="font-dm text-xs font-medium text-linen-cream group-hover:text-amber-tan transition-colors truncate">{p.name}</p>
                         <p className="font-dm text-xs text-linen-cream/35 mt-0.5">{formatNGN(p.price)}</p>
                       </Link>
                     ))}
@@ -281,40 +224,72 @@ export default function CartPage() {
               )}
             </div>
 
-            {/* Right — order summary */}
+            {/* ── Order summary ── */}
             <div className="flex-[35] min-w-0">
-              {/* Mobile sticky checkout bar */}
-              <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-obsidian border-t border-white/10 px-4 py-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-dm text-xs text-linen-cream/40">Total</p>
-                  <p className="font-dm font-bold text-amber-tan text-lg">{formatNGN(total)}</p>
+              <div className="lg:sticky lg:top-[88px] bg-charcoal text-linen-cream rounded-xl p-5 space-y-4">
+                <h2 className="font-dm text-xl">Order Summary</h2>
+
+                <div className="space-y-2.5 font-dm text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-linen-cream/55">Subtotal</span>
+                    <span>{formatNGN(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-linen-cream/55">Shipping</span>
+                    <span>{formatNGN(shipping)}</span>
+                  </div>
+                  {appliedPromo && (
+                    <div className="flex justify-between text-emerald-400">
+                      <span>Discount ({appliedPromo.code})</span>
+                      <span>−{formatNGN(discount)}</span>
+                    </div>
+                  )}
                 </div>
+
+                <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+                  <span className="font-dm font-semibold text-sm">Total</span>
+                  <span className="font-dm font-bold text-amber-tan text-xl">{formatNGN(total)}</span>
+                </div>
+
+                {/* Promo */}
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      value={promo}
+                      onChange={(e) => { setPromo(e.target.value); setPromoStatus("idle"); }}
+                      onKeyDown={(e) => e.key === "Enter" && applyPromo()}
+                      placeholder="Promo code"
+                      className="flex-1 bg-white/8 border border-white/10 px-3 py-2 font-dm text-sm text-linen-cream placeholder:text-linen-cream/25 focus:outline-none focus:border-amber-tan transition-colors rounded-sm"
+                    />
+                    <button
+                      onClick={applyPromo}
+                      className="px-4 py-2 bg-amber-tan text-obsidian font-dm font-semibold text-xs uppercase hover:bg-linen-cream transition-colors rounded-sm"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {promoStatus === "success" && (
+                    <p className="font-dm text-xs text-emerald-400">✓ {Math.round((appliedPromo?.rate ?? 0) * 100)}% off applied</p>
+                  )}
+                  {promoStatus === "error" && (
+                    <p className="font-dm text-xs text-red-400">✗ Invalid promo code</p>
+                  )}
+                </div>
+
                 <Link
-                  href={user ? "/checkout" : "/auth"}
-                  className="flex-1 max-w-[200px] h-[48px] flex items-center justify-center bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-linen-cream transition-colors rounded-sm"
+                  href={checkoutHref}
+                  className="flex items-center justify-center w-full h-[52px] bg-amber-tan text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase hover:bg-linen-cream transition-colors rounded-sm"
                 >
-                  {user ? "Checkout" : "Sign In to Checkout"}
+                  {checkoutLabel}
                 </Link>
-              </div>
-              {/* Desktop order summary */}
-              <div className="hidden lg:block">
-              <OrderSummary
-                subtotal={subtotal}
-                shipping={shipping}
-                discount={discount}
-                total={total}
-                appliedPromo={appliedPromo}
-                promo={promo}
-                setPromo={setPromo}
-                promoStatus={promoStatus}
-                setPromoStatus={setPromoStatus}
-                applyPromo={applyPromo}
-                ctaHref="/checkout"
-                ctaLabel="Proceed to Checkout"
-                user={user}
-              />
+
+                <div className="flex items-center justify-center gap-2 text-linen-cream/25">
+                  <Lock size={11} />
+                  <span className="font-dm text-[11px]">Secure checkout · Paystack</span>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </main>

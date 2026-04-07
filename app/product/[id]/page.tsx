@@ -38,7 +38,7 @@ const PRODUCT_IMAGES: Record<number, string[]> = {
   // 2 — Linen Relaxed Shirt (men, shirt)
   2:  ["https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=900&q=80","https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?w=900&q=80","https://images.unsplash.com/photo-1607345366928-199ea26cfe3e?w=900&q=80"],
   // 3 — Heavyweight Hoodie (men, hoodie)
-  3:  ["https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=900&q=80","https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=900&q=80","https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=900&q=80"],
+  3:  ["https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=900&q=80","https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=900&q=80","https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=900&q=80"],
   // 4 — Wide-Leg Cargo Trousers (men, trousers)
   4:  ["https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=900&q=80","https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?w=900&q=80","https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=900&q=80"],
   // 5 — Washed Graphic Tee (men, t-shirt)
@@ -221,7 +221,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.25em] mb-2">
                 {({ men: "Men", women: "Women", teens: "Teens", kids: "Kids" } as Record<string,string>)[product.gender]} · {product.subtype}
               </p>
-              <h1 className="font-playfair text-3xl md:text-4xl text-obsidian mb-3 leading-tight">{product.name}</h1>
+              <h1 className="font-dm text-3xl md:text-4xl text-obsidian mb-3 leading-tight">{product.name}</h1>
               <p className="font-dm text-2xl text-charcoal mb-8">{formatNGN(product.price)}</p>
 
               {/* Color */}
@@ -327,7 +327,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             >
               <div>
                 <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-1">You May Also Like</p>
-                <h2 className="font-playfair text-3xl md:text-4xl text-obsidian">Related Pieces</h2>
+                <h2 className="font-dm text-3xl md:text-4xl text-obsidian">Related Pieces</h2>
               </div>
               <Link href={`/shop/${product.gender}`} className="hidden sm:block font-dm text-xs text-charcoal border-b border-charcoal/30 pb-0.5 hover:text-amber-tan hover:border-amber-tan transition-colors">
                 View All
@@ -369,7 +369,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <div className="mt-20">
               <motion.div initial={hidden} whileInView={visibleFadeUp(0)} viewport={{ once: true, margin: "-60px" }} className="mb-10">
                 <p className="font-dm text-amber-tan text-[10px] tracking-[0.35em] uppercase mb-1">Your History</p>
-                <h2 className="font-playfair text-3xl md:text-4xl text-obsidian">Recently Viewed</h2>
+                <h2 className="font-dm text-3xl md:text-4xl text-obsidian">Recently Viewed</h2>
               </motion.div>
               <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
                 className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">

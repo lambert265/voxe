@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Package, ShoppingBag, Users,
-  BarChart2, Zap, Settings, Menu, X, Bell, ChevronDown, Search, LogOut,
+  BarChart2, Zap, Settings, Menu, X, Bell, Search, LogOut,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
   { href: "/admin",           label: "Overview",   icon: LayoutDashboard },
@@ -22,32 +23,66 @@ const NAV = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const supabase = createClient();
 
-  useEffect(() => { setMounted(true); }, []);
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  // Auth guard — redirect to auth if not admin
+  // Close notif dropdown on outside click
   useEffect(() => {
-    if (mounted && (!user || !isAdmin)) {
-      router.replace("/auth");
+    function onOutside(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-notif]")) setNotifOpen(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, user, isAdmin]);
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, []);
 
-  if (!mounted || !user || !isAdmin) {
+  // Fetch pending orders count for notification bell
+  useEffect(() => {
+    if (!isAdmin) return;
+    async function fetchPending() {
+      const { count } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "Pending");
+      setPendingCount(count ?? 0);
+    }
+    fetchPending();
+    // Real-time updates
+    const channel = supabase
+      .channel("admin_notifications")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, fetchPending)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [isAdmin]);
+
+  // Auth guard — only redirect after loading completes
+  useEffect(() => {
+    if (loading) return;
+    if (!user) router.replace("/auth");
+    else if (!isAdmin) router.replace("/shop");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, user, isAdmin]);
+
+  // Only block render while loading
+  if (loading) {
     return (
       <div className="min-h-screen bg-obsidian flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-2 border-amber-tan/30 border-t-amber-tan rounded-full animate-spin mx-auto mb-4" />
-          <p className="font-dm text-xs text-linen-cream/30 tracking-widest uppercase">Verifying access...</p>
+          <p className="font-dm text-xs text-linen-cream/30 tracking-widest uppercase">Loading...</p>
         </div>
       </div>
     );
   }
+
+  // Not authorized — render nothing while redirect fires
+  if (!user || !isAdmin) return null;
 
   const pageTitle = NAV.find((n) => n.href === pathname)?.label ?? "Admin";
 
@@ -63,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="flex items-center justify-between px-6 h-16 border-b border-amber-tan/10 shrink-0">
           <div>
-            <span className="font-playfair text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</span>
+            <span className="font-dm text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</span>
             <span className="font-dm text-[9px] text-amber-tan/40 tracking-[0.3em] uppercase ml-2">Admin</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-linen-cream/30 hover:text-linen-cream transition-colors">
@@ -129,15 +164,58 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button className="relative text-linen-cream/35 hover:text-amber-tan transition-colors">
-              <Bell size={17} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-tan rounded-full" />
-            </button>
-            <div className="flex items-center gap-2 cursor-pointer group">
+            <div className="relative" data-notif>
+              <button
+                onClick={() => setNotifOpen((v) => !v)}
+                className="relative text-linen-cream/35 hover:text-amber-tan transition-colors"
+              >
+                <Bell size={17} />
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-tan rounded-full flex items-center justify-center font-dm text-[9px] font-bold text-obsidian">
+                    {pendingCount > 9 ? "9+" : pendingCount}
+                  </span>
+                )}
+              </button>
+              {notifOpen && (
+                <div className="absolute right-0 top-full mt-2 w-72 bg-[#0D0B06] border border-amber-tan/15 shadow-2xl rounded-xl z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-amber-tan/10 flex items-center justify-between">
+                    <p className="font-dm text-xs text-linen-cream font-semibold">Notifications</p>
+                    {pendingCount > 0 && (
+                      <span className="font-dm text-[9px] text-amber-tan bg-amber-tan/10 px-2 py-0.5 rounded-full">
+                        {pendingCount} pending
+                      </span>
+                    )}
+                  </div>
+                  {pendingCount > 0 ? (
+                    <div className="p-3">
+                      <div className="flex items-start gap-3 p-3 bg-amber-tan/5 border border-amber-tan/10 rounded-lg">
+                        <ShoppingBag size={14} className="text-amber-tan shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-dm text-xs text-linen-cream">{pendingCount} order{pendingCount > 1 ? "s" : ""} awaiting processing</p>
+                          <Link href="/admin/orders" onClick={() => setNotifOpen(false)}
+                            className="font-dm text-[10px] text-amber-tan hover:underline mt-1 inline-block">
+                            View orders →
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-dm text-xs text-linen-cream/25 text-center py-6">No new notifications</p>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-amber-tan flex items-center justify-center">
-                <span className="font-dm text-xs font-bold text-obsidian">SA</span>
+                <span className="font-dm text-xs font-bold text-obsidian">
+                  {(user.user_metadata?.full_name ?? user.email ?? "A")[0].toUpperCase()}
+                </span>
               </div>
-              <ChevronDown size={12} className="text-linen-cream/25 group-hover:text-amber-tan transition-colors" />
+              <div className="hidden sm:block min-w-0">
+                <p className="font-dm text-xs text-linen-cream font-medium truncate max-w-[120px]">
+                  {user.user_metadata?.full_name ?? user.email ?? "Admin"}
+                </p>
+              </div>
             </div>
           </div>
         </header>
@@ -146,7 +224,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mb-7">
             <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.35em] mb-1">VOXE Admin</p>
-            <h1 className="font-playfair text-3xl text-linen-cream">{pageTitle}</h1>
+            <h1 className="font-dm text-3xl text-linen-cream">{pageTitle}</h1>
           </div>
           {children}
         </main>

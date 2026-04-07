@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const SYSTEM_PROMPT = `You are VOXE's in-store assistant. VOXE is a premium Nigerian fashion brand selling clothing and footwear for Men, Women, Teens, and Kids. Currency is Nigerian Naira (₦). Flat shipping rate is ₦3,500. Delivery is 3–5 days Lagos, 5–7 days nationwide.
 
 Your personality:
@@ -25,6 +23,7 @@ Never make up prices, stock levels, or order statuses.
 Never be rude. Never be overly enthusiastic.`;
 
 export async function POST(req: NextRequest) {
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   try {
     const { messages } = await req.json();
 

@@ -1,116 +1,121 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const sections = [
-  {
-    title: "Standard Delivery",
-    items: [
-      ["Lagos", "1 – 2 business days", "₦1,500 (free over ₦50,000)"],
-      ["Abuja / Port Harcourt", "2 – 3 business days", "₦2,000 (free over ₦50,000)"],
-      ["Other Nigerian States", "3 – 5 business days", "₦3,500 (free over ₦50,000)"],
-    ],
-  },
-  {
-    title: "Express Delivery",
-    items: [
-      ["Lagos", "Same day (order before 12pm)", "₦3,500"],
-      ["Abuja / Port Harcourt", "Next day", "₦5,000"],
-      ["Other Nigerian States", "2 business days", "₦6,500"],
-    ],
-  },
-];
+import { Package, RefreshCw, Truck, CreditCard } from "lucide-react";
 
 const returnSteps = [
-  { n: "01", title: "Initiate Return", body: "Email returns@voxe.ng within 30 days of delivery with your order number and reason for return." },
-  { n: "02", title: "Pack Your Item", body: "Place the item in its original packaging (or any secure packaging). Include your order slip inside." },
-  { n: "03", title: "Drop Off", body: "Drop the parcel at any GIG Logistics or DHL outlet near you. We'll send you the return address." },
-  { n: "04", title: "Refund Processed", body: "Once we receive and inspect the item, your refund is processed within 3 – 5 business days to your original payment method." },
+  { n: "01", title: "Initiate Return",   body: "Email hello@voxe.com within 30 days of delivery with your order number and reason for return." },
+  { n: "02", title: "Pack Your Item",    body: "Place the item in its original packaging. Include your order slip inside." },
+  { n: "03", title: "Drop Off",          body: "Drop the parcel at any GIG Logistics or DHL outlet near you. We'll send you the return address." },
+  { n: "04", title: "Refund Processed",  body: "Once we receive and inspect the item, your refund is processed within 3–5 business days." },
+];
+
+const refundOptions = [
+  { icon: CreditCard, label: "Original Payment", desc: "Refunded to your card or bank account within 3–5 business days." },
+  { icon: Package,    label: "Store Credit",      desc: "Instant credit added to your VOXE account — never expires." },
+  { icon: RefreshCw,  label: "Exchange",          desc: "Swap for a different size or colour. We ship the replacement free." },
 ];
 
 export default function ShippingPage() {
   return (
     <>
       <Navbar />
-      <div className="bg-off-white pt-28 pb-14 text-center px-6">
-        <h1 className="font-dm text-5xl md:text-6xl text-charcoal mb-4">Shipping & Returns</h1>
-        <p className="font-dm text-charcoal/50 text-lg max-w-md mx-auto">
-          Fast delivery across Nigeria. Hassle-free returns within 30 days.
-        </p>
-      </div>
+      <main className="min-h-screen bg-obsidian">
 
-      <main className="max-w-4xl mx-auto px-6 pb-24 space-y-16">
+        {/* Hero */}
+        <section className="pt-32 pb-16 px-6 text-center border-b border-amber-tan/8">
+          <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.4em] mb-4">Delivery & Returns</p>
+          <h1 className="font-playfair text-5xl md:text-6xl text-linen-cream mb-4">Shipping & Returns</h1>
+          <p className="font-dm text-linen-cream/40 text-base max-w-sm mx-auto">
+            Fast delivery across Nigeria. Hassle-free returns within 30 days.
+          </p>
+        </section>
 
-        {/* Delivery tables */}
-        {sections.map((s) => (
-          <section key={s.title}>
-            <h2 className="font-dm text-2xl text-charcoal mb-6">{s.title}</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm font-dm border-collapse">
-                <thead>
-                  <tr className="bg-amber-tan text-obsidian">
-                    <th className="py-3 px-4 text-left font-semibold">Location</th>
-                    <th className="py-3 px-4 text-left font-semibold">Estimated Time</th>
-                    <th className="py-3 px-4 text-left font-semibold">Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s.items.map(([loc, time, cost], i) => (
-                    <tr key={loc} className={i % 2 === 0 ? "bg-white" : "bg-off-white"}>
-                      <td className="py-3 px-4 font-medium text-charcoal">{loc}</td>
-                      <td className="py-3 px-4 text-charcoal/70">{time}</td>
-                      <td className="py-3 px-4 text-charcoal/70">{cost}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
+
+          {/* Shipping info */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Truck size={18} className="text-amber-tan" />
+              <h2 className="font-playfair text-2xl text-linen-cream">Delivery</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { location: "Lagos",          time: "3–5 business days",  cost: "₦3,500 flat rate" },
+                { location: "Nationwide",     time: "5–7 business days",  cost: "₦3,500 flat rate" },
+              ].map((row) => (
+                <div key={row.location} className="card-gloss rounded-xl p-6 border border-amber-tan/10">
+                  <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-3">{row.location}</p>
+                  <p className="font-playfair text-2xl text-linen-cream mb-1">{row.time}</p>
+                  <p className="font-dm text-sm text-linen-cream/40">{row.cost}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 p-5 rounded-xl border border-amber-tan/10 bg-amber-tan/4">
+              <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-3">Important Notes</p>
+              <ul className="font-dm text-sm text-linen-cream/50 space-y-2 leading-relaxed">
+                <li className="flex gap-2"><span className="text-amber-tan shrink-0">·</span> Orders placed before 2pm on weekdays are dispatched same day.</li>
+                <li className="flex gap-2"><span className="text-amber-tan shrink-0">·</span> Weekend orders are processed the next business day.</li>
+                <li className="flex gap-2"><span className="text-amber-tan shrink-0">·</span> Delivery times are estimates and may vary during peak periods.</li>
+                <li className="flex gap-2"><span className="text-amber-tan shrink-0">·</span> You will receive an SMS and email with your tracking number once dispatched.</li>
+              </ul>
             </div>
           </section>
-        ))}
 
-        {/* Notes */}
-        <section className="bg-white border border-linen-cream rounded-sm p-7 space-y-3">
-          <h2 className="font-dm text-xl text-charcoal">Important Notes</h2>
-          <ul className="font-dm text-sm text-charcoal/65 space-y-2 list-disc list-inside leading-relaxed">
-            <li>Orders placed before 2pm on weekdays are dispatched same day.</li>
-            <li>Weekend orders are processed the next business day.</li>
-            <li>Delivery times are estimates and may vary during peak periods.</li>
-            <li>You will receive an SMS and email with your tracking number once dispatched.</li>
-          </ul>
-        </section>
+          {/* Returns */}
+          <section>
+            <div className="flex items-center gap-3 mb-4">
+              <RefreshCw size={18} className="text-amber-tan" />
+              <h2 className="font-playfair text-2xl text-linen-cream">Returns Policy</h2>
+            </div>
+            <p className="font-dm text-linen-cream/45 text-sm mb-8 leading-relaxed">
+              We accept returns within <span className="text-linen-cream font-semibold">30 days</span> of delivery for items that are unworn, unwashed, and in original condition with tags attached. Sale items and underwear are non-returnable.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {returnSteps.map((step, i) => (
+                <div key={step.n} className="card-gloss rounded-xl p-6 border border-amber-tan/10 flex gap-4">
+                  <span className="font-playfair text-3xl text-amber-tan/40 shrink-0 leading-none">{step.n}</span>
+                  <div>
+                    <p className="font-dm text-sm font-semibold text-linen-cream mb-1">{step.title}</p>
+                    <p className="font-dm text-xs text-linen-cream/40 leading-relaxed">{step.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
-        {/* Returns */}
-        <section>
-          <h2 className="font-dm text-2xl text-charcoal mb-2">Returns Policy</h2>
-          <p className="font-dm text-charcoal/55 text-sm mb-10 leading-relaxed">
-            We accept returns within <strong className="text-charcoal font-semibold">30 days</strong> of delivery for items that are unworn, unwashed, and in original condition with tags attached. Sale items and underwear are non-returnable.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {returnSteps.map((step) => (
-              <div key={step.n} className="bg-white border border-linen-cream rounded-sm p-6 space-y-2">
-                <span className="font-dm text-3xl text-amber-tan">{step.n}</span>
-                <p className="font-dm text-lg text-charcoal">{step.title}</p>
-                <p className="font-dm text-sm text-charcoal/60 leading-relaxed">{step.body}</p>
-              </div>
-            ))}
+          {/* Refund options */}
+          <section>
+            <h2 className="font-playfair text-2xl text-linen-cream mb-6">Refund Options</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {refundOptions.map(({ icon: Icon, label, desc }) => (
+                <div key={label} className="card-gloss rounded-xl p-6 border border-amber-tan/10 space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-tan/10 border border-amber-tan/20 flex items-center justify-center">
+                    <Icon size={16} className="text-amber-tan" />
+                  </div>
+                  <p className="font-dm text-sm font-semibold text-linen-cream">{label}</p>
+                  <p className="font-dm text-xs text-linen-cream/40 leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA */}
+          <div className="text-center py-8 border-t border-amber-tan/8">
+            <p className="font-dm text-sm text-linen-cream/35 mb-5">Need help with a return or delivery issue?</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/contact"
+                className="btn-amber sheen inline-flex items-center justify-center px-8 py-3.5 text-obsidian font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm">
+                Contact Us
+              </Link>
+              <Link href="/track-order"
+                className="inline-flex items-center justify-center px-8 py-3.5 border border-amber-tan/25 text-amber-tan font-dm font-semibold text-[11px] tracking-[0.2em] uppercase rounded-sm hover:bg-amber-tan/10 transition-colors">
+                Track Order
+              </Link>
+            </div>
           </div>
-        </section>
-
-        {/* Refund types */}
-        <section className="bg-obsidian text-linen-cream rounded-sm p-8 space-y-5">
-          <h2 className="font-dm text-2xl">Refund Options</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 font-dm text-sm">
-            {[
-              { label: "Original Payment", desc: "Refunded to your card or bank account within 3 – 5 business days." },
-              { label: "Store Credit", desc: "Instant credit added to your VOXE account — never expires." },
-              { label: "Exchange", desc: "Swap for a different size or colour. We'll ship the replacement free." },
-            ].map((r) => (
-              <div key={r.label} className="border border-white/10 rounded-sm p-5 space-y-2">
-                <p className="font-semibold text-amber-tan">{r.label}</p>
-                <p className="text-linen-cream/55 leading-relaxed">{r.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        </div>
       </main>
       <Footer />
     </>

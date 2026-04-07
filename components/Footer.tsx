@@ -127,7 +127,7 @@ export default function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-white/8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="font-dm text-[11px] text-linen-cream/25">
               © {new Date().getFullYear()} VOXE. All rights reserved.
             </p>

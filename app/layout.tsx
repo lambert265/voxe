@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
@@ -12,6 +12,14 @@ import ChatWidget from "@/components/ChatWidget";
 const dm = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -29,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={dm.variable}>
+    <html lang="en" className={`${dm.variable} ${cormorant.variable}`}>
       <body suppressHydrationWarning>
         <AuthProvider>
           <CartProvider>

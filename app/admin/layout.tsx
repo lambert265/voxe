@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Package, ShoppingBag, Users,
-  BarChart2, Zap, Settings, Menu, X, Bell, Search, LogOut,
+  BarChart2, Zap, Settings, Menu, X, Bell, LogOut, Calendar,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/customers", label: "Customers",  icon: Users           },
   { href: "/admin/inventory", label: "Inventory",  icon: Package         },
   { href: "/admin/drops",     label: "Drops",      icon: Zap             },
+  { href: "/admin/calendar",  label: "Calendar",   icon: Calendar        },
   { href: "/admin/analytics", label: "Analytics",  icon: BarChart2       },
   { href: "/admin/settings",  label: "Settings",   icon: Settings        },
 ];
@@ -25,7 +26,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { user, isAdmin, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const supabase = createClient();
@@ -87,21 +87,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pageTitle = NAV.find((n) => n.href === pathname)?.label ?? "Admin";
 
   return (
-    <div className="min-h-screen bg-obsidian flex text-linen-cream">
+    <div className="min-h-screen bg-obsidian flex text-linen-cream" style={{
+      // Design system CSS vars used by admin pages
+      "--adm-bg":      "#0a0a0a",
+      "--adm-surface": "#111111",
+      "--adm-surface2":"#181818",
+      "--adm-border":  "#2a2a2a",
+      "--adm-text":    "#e8e4de",
+      "--adm-text2":   "#8a8480",
+      "--adm-text3":   "#555",
+      "--adm-accent":  "#c9a96e",
+    } as React.CSSProperties}>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/80 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 bottom-0 z-50 w-64 bg-[#0D0B06] border-r border-amber-tan/10 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed top-0 left-0 bottom-0 z-50 w-56 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ background: "var(--adm-surface)", borderRight: "1px solid var(--adm-border)" }}>
         {/* Logo */}
-        <div className="flex items-center justify-between px-6 h-16 border-b border-amber-tan/10 shrink-0">
+        <div className="flex items-center justify-between px-6 h-16 shrink-0" style={{ borderBottom: "1px solid var(--adm-border)" }}>
           <div>
-            <span className="font-dm text-2xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</span>
-            <span className="font-dm text-[9px] text-amber-tan/40 tracking-[0.3em] uppercase ml-2">Admin</span>
+            <span style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: 28, fontWeight: 300, letterSpacing: 6, color: "#e8d5b0", textTransform: "uppercase" }}>Voxe</span>
+            <div style={{ fontSize: 9, letterSpacing: 3, color: "#555", textTransform: "uppercase", marginTop: 2 }}>Admin Panel</div>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-linen-cream/30 hover:text-linen-cream transition-colors">
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden" style={{ color: "#555" }}>
             <X size={18} />
           </button>
         </div>
@@ -112,15 +123,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const active = pathname === href;
             return (
               <Link key={href} href={href}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-dm text-sm transition-all duration-150 ${
-                  active
-                    ? "bg-amber-tan text-obsidian font-semibold"
-                    : "text-linen-cream/40 hover:bg-amber-tan/8 hover:text-linen-cream"
-                }`}>
-                <Icon size={15} className={active ? "text-obsidian" : ""} />
+                style={active ? {
+                  display: "flex", alignItems: "center", gap: 12, padding: "10px 16px",
+                  borderRadius: 8, fontSize: 13, background: "rgba(201,169,110,0.12)",
+                  color: "#c9a96e", borderLeft: "2px solid #c9a96e", textDecoration: "none",
+                } : {
+                  display: "flex", alignItems: "center", gap: 12, padding: "10px 16px",
+                  borderRadius: 8, fontSize: 13, color: "#8a8480", borderLeft: "2px solid transparent",
+                  textDecoration: "none",
+                }}>
+                <Icon size={15} style={{ opacity: active ? 1 : 0.7, flexShrink: 0 }} />
                 {label}
                 {label === "Drops" && (
-                  <span className="ml-auto font-dm text-[9px] bg-amber-tan/20 text-amber-tan px-1.5 py-0.5 rounded-full tracking-wider">NEW</span>
+                  <span style={{ marginLeft: "auto", fontSize: 9, background: "rgba(201,169,110,0.2)", color: "#c9a96e", padding: "2px 6px", borderRadius: 10, letterSpacing: 1 }}>NEW</span>
                 )}
               </Link>
             );
@@ -128,21 +143,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Divider + store link */}
-        <div className="px-6 py-5 border-t border-amber-tan/10 shrink-0 space-y-3">
-          <Link href="/" className="flex items-center gap-2 font-dm text-[11px] text-linen-cream/25 hover:text-amber-tan transition-colors tracking-widest uppercase">
+        <div className="px-6 py-5 shrink-0 space-y-3" style={{ borderTop: "1px solid var(--adm-border)" }}>
+          <Link href="/" className="flex items-center gap-2" style={{ fontSize: 11, color: "#555", letterSpacing: 3, textTransform: "uppercase", textDecoration: "none" }}>
             <span>←</span> Back to Store
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-amber-tan flex items-center justify-center shrink-0">
-              <span className="font-dm text-xs font-bold text-obsidian">
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#c9a96e,#8b6914)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 14, color: "#000" }}>
                 {(user.user_metadata?.full_name ?? user.email ?? "AD").slice(0,2).toUpperCase()}
               </span>
             </div>
             <div className="min-w-0">
-              <p className="font-dm text-xs text-linen-cream font-medium truncate">{user.user_metadata?.full_name ?? "Admin"}</p>
-              <p className="font-dm text-[10px] text-linen-cream/30 truncate">{user.email}</p>
+              <p style={{ fontSize: 12, color: "var(--adm-text)", fontWeight: 500 }} className="truncate">{user.user_metadata?.full_name ?? "Admin"}</p>
+              <p style={{ fontSize: 10, color: "var(--adm-text3)" }} className="truncate">{user.email}</p>
             </div>
-            <button onClick={() => { logout(); router.push("/auth"); }} className="ml-auto text-linen-cream/20 hover:text-red-400 transition-colors" aria-label="Logout">
+            <button onClick={() => { logout().then(() => { router.push("/auth"); router.refresh(); }); }} className="ml-auto" style={{ background: "none", border: "none", cursor: "pointer", color: "#555" }} aria-label="Logout">
               <LogOut size={14} />
             </button>
           </div>
@@ -150,69 +165,65 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 border-b border-amber-tan/10 flex items-center justify-between px-6 bg-obsidian sticky top-0 z-30 shrink-0">
+        <header className="h-16 flex items-center justify-between px-6 sticky top-0 z-30 shrink-0"
+          style={{ background: "var(--adm-surface)", borderBottom: "1px solid var(--adm-border)" }}>
           <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-linen-cream/40 hover:text-amber-tan transition-colors">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden" style={{ color: "#555" }}>
               <Menu size={20} />
             </button>
-            <div className="relative hidden sm:block">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-linen-cream/20 pointer-events-none" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search products, orders..." className="input-gold pl-9 pr-4 py-2 rounded-lg font-dm text-sm w-60" />
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontWeight: 300, color: "var(--adm-text)" }}>
+              {pageTitle}
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div style={{ fontSize: 11, color: "var(--adm-text3)", fontFamily: "'DM Mono',monospace", padding: "6px 12px", background: "var(--adm-surface2)", border: "1px solid var(--adm-border)", borderRadius: 6 }}>
+              {new Date().toLocaleDateString("en-NG", { month: "short", day: "2-digit", year: "numeric" })}
+            </div>
             <div className="relative" data-notif>
               <button
                 onClick={() => setNotifOpen((v) => !v)}
-                className="relative text-linen-cream/35 hover:text-amber-tan transition-colors"
+                className="relative"
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--adm-text3)" }}
               >
                 <Bell size={17} />
                 {pendingCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-tan rounded-full flex items-center justify-center font-dm text-[9px] font-bold text-obsidian">
+                  <span style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, background: "#c9a96e", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#000" }}>
                     {pendingCount > 9 ? "9+" : pendingCount}
                   </span>
                 )}
               </button>
               {notifOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 bg-[#0D0B06] border border-amber-tan/15 shadow-2xl rounded-xl z-50 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-amber-tan/10 flex items-center justify-between">
-                    <p className="font-dm text-xs text-linen-cream font-semibold">Notifications</p>
-                    {pendingCount > 0 && (
-                      <span className="font-dm text-[9px] text-amber-tan bg-amber-tan/10 px-2 py-0.5 rounded-full">
-                        {pendingCount} pending
-                      </span>
-                    )}
+                <div style={{ position: "absolute", right: 0, top: "100%", marginTop: 8, width: 280, background: "#111", border: "1px solid #2a2a2a", boxShadow: "0 20px 40px rgba(0,0,0,0.5)", borderRadius: 12, zIndex: 50, overflow: "hidden" }}>
+                  <div style={{ padding: "12px 16px", borderBottom: "1px solid #2a2a2a", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "var(--adm-text)", fontWeight: 500 }}>Notifications</span>
+                    {pendingCount > 0 && <span style={{ fontSize: 9, color: "#c9a96e", background: "rgba(201,169,110,0.1)", padding: "2px 8px", borderRadius: 10 }}>{pendingCount} pending</span>}
                   </div>
                   {pendingCount > 0 ? (
-                    <div className="p-3">
-                      <div className="flex items-start gap-3 p-3 bg-amber-tan/5 border border-amber-tan/10 rounded-lg">
-                        <ShoppingBag size={14} className="text-amber-tan shrink-0 mt-0.5" />
+                    <div style={{ padding: 12 }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: 12, background: "rgba(201,169,110,0.05)", border: "1px solid rgba(201,169,110,0.1)", borderRadius: 8 }}>
+                        <ShoppingBag size={14} style={{ color: "#c9a96e", flexShrink: 0, marginTop: 2 }} />
                         <div>
-                          <p className="font-dm text-xs text-linen-cream">{pendingCount} order{pendingCount > 1 ? "s" : ""} awaiting processing</p>
-                          <Link href="/admin/orders" onClick={() => setNotifOpen(false)}
-                            className="font-dm text-[10px] text-amber-tan hover:underline mt-1 inline-block">
-                            View orders →
-                          </Link>
+                          <p style={{ fontSize: 12, color: "var(--adm-text)" }}>{pendingCount} order{pendingCount > 1 ? "s" : ""} awaiting processing</p>
+                          <Link href="/admin/orders" onClick={() => setNotifOpen(false)} style={{ fontSize: 10, color: "#c9a96e", textDecoration: "none", marginTop: 4, display: "inline-block" }}>View orders →</Link>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <p className="font-dm text-xs text-linen-cream/25 text-center py-6">No new notifications</p>
+                    <p style={{ fontSize: 12, color: "var(--adm-text3)", textAlign: "center", padding: "24px 0" }}>No new notifications</p>
                   )}
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-amber-tan flex items-center justify-center">
-                <span className="font-dm text-xs font-bold text-obsidian">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#c9a96e,#8b6914)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 14, color: "#000" }}>
                   {(user.user_metadata?.full_name ?? user.email ?? "A")[0].toUpperCase()}
                 </span>
               </div>
               <div className="hidden sm:block min-w-0">
-                <p className="font-dm text-xs text-linen-cream font-medium truncate max-w-[120px]">
+                <p style={{ fontSize: 12, color: "var(--adm-text)", fontWeight: 500 }} className="truncate max-w-[120px]">
                   {user.user_metadata?.full_name ?? user.email ?? "Admin"}
                 </p>
               </div>
@@ -221,10 +232,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="mb-7">
-            <p className="font-dm text-[10px] text-amber-tan uppercase tracking-[0.35em] mb-1">VOXE Admin</p>
-            <h1 className="font-dm text-3xl text-linen-cream">{pageTitle}</h1>
+        <main className="flex-1 overflow-y-auto" style={{ padding: 28, background: "var(--adm-bg)" }}>
+          <div style={{ marginBottom: 28 }}>
+            <p style={{ fontSize: 10, color: "#c9a96e", textTransform: "uppercase", letterSpacing: "0.35em", marginBottom: 4 }}>VOXE Admin</p>
+            <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 30, fontWeight: 300, color: "var(--adm-text)" }}>{pageTitle}</h1>
           </div>
           {children}
         </main>

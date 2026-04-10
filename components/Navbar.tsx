@@ -174,8 +174,8 @@ export default function Navbar() {
 
           {/* Icons */}
           <div className="flex items-center gap-4">
-            {/* Search — hidden on mobile */}
-            <button aria-label="Search" onClick={() => setSearchOpen(true)} className="hidden sm:block text-linen-cream/70 hover:text-amber-tan transition-colors duration-200">
+            {/* Search — visible on all sizes */}
+            <button aria-label="Search" onClick={() => setSearchOpen(true)} className="text-linen-cream/70 hover:text-amber-tan transition-colors duration-200">
               <Search size={19} />
             </button>
             {/* Wishlist — hidden on mobile */}

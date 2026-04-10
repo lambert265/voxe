@@ -125,10 +125,10 @@ export default function AuthPage() {
   const visual = VISUALS[tab];
 
   return (
-    <main className="min-h-screen bg-obsidian flex overflow-y-auto">
+    <main className="min-h-screen bg-obsidian flex flex-col lg:flex-row">
 
       {/* ── Left panel ── */}
-      <div className="hidden lg:flex lg:w-[52%] relative overflow-hidden flex-col">
+      <div className="lg:w-[52%] relative overflow-hidden flex-col flex min-h-[40vh] lg:min-h-screen">
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.6, ease: "easeInOut" }}
@@ -140,7 +140,7 @@ export default function AuthPage() {
         </AnimatePresence>
         <div className="relative z-10 flex flex-col h-full p-12">
           <Link href="/" className="font-dm text-3xl font-bold text-amber-tan" style={{ letterSpacing: "-1px" }}>VOXE</Link>
-          <div className="mt-auto">
+          <div className="mt-auto hidden lg:block">
             <AnimatePresence mode="wait">
               <motion.div key={tab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.4, delay: 0.1 }}>

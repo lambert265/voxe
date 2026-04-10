@@ -64,8 +64,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Auth guard — only redirect after loading completes
   useEffect(() => {
     if (loading) return;
-    if (!user) router.replace("/auth");
-    else if (!isAdmin) router.replace("/shop");
+    if (!user) { router.replace("/auth"); return; }
+    // Give isAdmin a moment to resolve from profiles table
+    const timer = setTimeout(() => {
+      if (!isAdmin) router.replace("/shop");
+    }, 500);
+    return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user, isAdmin]);
 
@@ -157,7 +161,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p style={{ fontSize: 12, color: "var(--adm-text)", fontWeight: 500 }} className="truncate">{user.user_metadata?.full_name ?? "Admin"}</p>
               <p style={{ fontSize: 10, color: "var(--adm-text3)" }} className="truncate">{user.email}</p>
             </div>
-            <button onClick={() => { logout().then(() => { router.push("/auth"); router.refresh(); }); }} className="ml-auto" style={{ background: "none", border: "none", cursor: "pointer", color: "#555" }} aria-label="Logout">
+            <button onClick={() => { logout(); router.push("/auth"); }} className="ml-auto" style={{ background: "none", border: "none", cursor: "pointer", color: "#555" }} aria-label="Logout">
               <LogOut size={14} />
             </button>
           </div>

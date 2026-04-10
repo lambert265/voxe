@@ -10,13 +10,12 @@ interface AuthCtx {
   logout: () => void;
 }
 
-const Ctx = createContext<AuthCtx>({ user: null, isAdmin: false, loading: true, logout: async () => {} });
+const Ctx = createContext<AuthCtx>({ user: null, isAdmin: false, loading: true, logout: () => {} });
 
-function checkIsAdmin(u: User | null): boolean {
+function checkAdminByEmail(u: User | null): boolean {
   if (!u) return false;
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim().toLowerCase();
-  const userEmail = u.email?.trim().toLowerCase();
-  return !!adminEmail && !!userEmail && userEmail === adminEmail;
+  return !!adminEmail && u.email?.trim().toLowerCase() === adminEmail;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -25,21 +24,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  async function resolveAdmin(u: User | null) {
+    if (!u) { setIsAdmin(false); return; }
+
+    // Fast check by email first
+    if (checkAdminByEmail(u)) { setIsAdmin(true); return; }
+
+    // Then check profiles table
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", u.id)
+        .single();
+      setIsAdmin(data?.role === "admin");
+    } catch {
+      setIsAdmin(false);
+    }
+  }
+
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       const u = session?.user ?? null;
       setUser(u);
-      setIsAdmin(checkIsAdmin(u));
+      await resolveAdmin(u);
       setLoading(false);
     });
 
-    // Listen for auth changes (skip INITIAL_SESSION — handled by getSession above)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "INITIAL_SESSION") return;
       const u = session?.user ?? null;
       setUser(u);
-      setIsAdmin(checkIsAdmin(u));
+      await resolveAdmin(u);
     });
 
     return () => subscription.unsubscribe();
@@ -49,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     setUser(null);
     setIsAdmin(false);
-    supabase.auth.signOut(); // fire and forget
+    supabase.auth.signOut();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

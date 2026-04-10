@@ -1,85 +1,129 @@
 "use client";
-import { useState } from "react";
-import { Search, X, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, X, MapPin, RefreshCw } from "lucide-react";
 import { formatNGN } from "@/lib/products";
+import { createClient } from "@/lib/supabase/client";
 
-const CUSTOMERS = [
-  { id:1, name:"Ada Okonkwo",    email:"ada@example.com",    phone:"+234 801 234 5678", orders:7,  spent:641500, location:"Lagos",       joined:"Jan 2025", lastOrder:"12 Jun 2025" },
-  { id:2, name:"Emeka Nwosu",    email:"emeka@example.com",  phone:"+234 802 345 6789", orders:3,  spent:224000, location:"Abuja",       joined:"Feb 2025", lastOrder:"12 Jun 2025" },
-  { id:3, name:"Zara Bello",     email:"zara@example.com",   phone:"+234 803 456 7890", orders:12, spent:987000, location:"Port Harcourt",joined:"Nov 2024", lastOrder:"11 Jun 2025" },
-  { id:4, name:"Tunde Adeyemi",  email:"tunde@example.com",  phone:"+234 804 567 8901", orders:2,  spent:95000,  location:"Ibadan",      joined:"Mar 2025", lastOrder:"11 Jun 2025" },
-  { id:5, name:"Chisom Eze",     email:"chisom@example.com", phone:"+234 805 678 9012", orders:9,  spent:812000, location:"Lagos",       joined:"Dec 2024", lastOrder:"10 Jun 2025" },
-  { id:6, name:"Fatima Aliyu",   email:"fatima@example.com", phone:"+234 806 789 0123", orders:4,  spent:315000, location:"Abuja",       joined:"Feb 2025", lastOrder:"10 Jun 2025" },
-  { id:7, name:"Oluwaseun Babs", email:"seun@example.com",   phone:"+234 807 890 1234", orders:6,  spent:478000, location:"Ibadan",      joined:"Jan 2025", lastOrder:"09 Jun 2025" },
-  { id:8, name:"Ngozi Obi",      email:"ngozi@example.com",  phone:"+234 808 901 2345", orders:5,  spent:390000, location:"Port Harcourt",joined:"Mar 2025", lastOrder:"09 Jun 2025" },
-  { id:9, name:"Kemi Adebayo",   email:"kemi@example.com",   phone:"+234 809 012 3456", orders:15, spent:1240000,location:"Lagos",       joined:"Oct 2024", lastOrder:"08 Jun 2025" },
-  { id:10,name:"Uche Okafor",    email:"uche@example.com",   phone:"+234 810 123 4567", orders:1,  spent:47500,  location:"Enugu",       joined:"Jun 2025", lastOrder:"07 Jun 2025" },
-];
+type Customer = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  created_at: string;
+  order_count?: number;
+  total_spent?: number;
+};
 
-type Customer = typeof CUSTOMERS[0];
-
-function initials(name: string) { return name.split(" ").map((n) => n[0]).join("").toUpperCase(); }
+function initials(name: string) {
+  return (name || "?").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+}
 
 export default function AdminCustomers() {
+  const supabase = createClient();
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Customer | null>(null);
 
-  const filtered = CUSTOMERS.filter((c) =>
-    !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.email.toLowerCase().includes(search.toLowerCase())
+  async function fetchCustomers() {
+    setLoading(true);
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, full_name, email, phone, city, created_at")
+      .order("created_at", { ascending: false });
+
+    if (!profiles) { setLoading(false); return; }
+
+    // Fetch order stats per customer
+    const enriched = await Promise.all(profiles.map(async (p) => {
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("total")
+        .eq("user_id", p.id);
+      return {
+        ...p,
+        order_count: orders?.length ?? 0,
+        total_spent: orders?.reduce((s, o) => s + (o.total ?? 0), 0) ?? 0,
+      };
+    }));
+
+    setCustomers(enriched);
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchCustomers(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const filtered = customers.filter((c) =>
+    !search ||
+    (c.full_name ?? "").toLowerCase().includes(search.toLowerCase()) ||
+    (c.email ?? "").toLowerCase().includes(search.toLowerCase())
   );
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" });
+  }
 
   return (
     <div className="space-y-5">
-      {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-linen-cream/20 pointer-events-none" />
           <input value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search customers..." className="input-gold pl-9 pr-4 py-2 rounded-lg font-dm text-sm w-64" />
         </div>
-        <span className="font-dm text-xs text-linen-cream/30">{filtered.length} customers</span>
+        <span className="font-dm text-xs text-linen-cream/40">{filtered.length} customers</span>
+        <button onClick={fetchCustomers} className="text-linen-cream/30 hover:text-amber-tan transition-colors ml-auto">
+          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+        </button>
       </div>
 
-      {/* Table */}
       <div className="card-gloss rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-amber-tan/8">
-                {["Customer","Location","Orders","Total Spent","Joined","Last Order",""].map((h) => (
-                  <th key={h} className="px-5 py-3.5 text-left font-dm text-[9px] text-linen-cream/25 uppercase tracking-widest whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((c, i) => (
-                <tr key={c.id} className={`hover:bg-amber-tan/3 transition-colors cursor-pointer ${i < filtered.length - 1 ? "border-b border-amber-tan/6" : ""}`}
-                  onClick={() => setSelected(c)}>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-tan/15 border border-amber-tan/25 flex items-center justify-center shrink-0">
-                        <span className="font-dm text-[10px] font-bold text-amber-tan">{initials(c.name)}</span>
-                      </div>
-                      <div>
-                        <p className="font-dm text-sm text-linen-cream">{c.name}</p>
-                        <p className="font-dm text-[10px] text-linen-cream/30">{c.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/40">{c.location}</td>
-                  <td className="px-5 py-3.5 font-dm text-sm text-linen-cream">{c.orders}</td>
-                  <td className="px-5 py-3.5 font-dm text-sm text-amber-tan font-medium">{formatNGN(c.spent)}</td>
-                  <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/30">{c.joined}</td>
-                  <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/30">{c.lastOrder}</td>
-                  <td className="px-5 py-3.5 font-dm text-xs text-amber-tan hover:underline">View</td>
+        {loading ? (
+          <div className="py-20 text-center font-dm text-sm text-linen-cream/30">Loading customers…</div>
+        ) : filtered.length === 0 ? (
+          <div className="py-20 text-center">
+            <p className="font-dm text-sm text-linen-cream/20">No customers yet</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-amber-tan/8">
+                  {["Customer", "Location", "Orders", "Total Spent", "Joined", ""].map((h) => (
+                    <th key={h} className="px-5 py-3.5 text-left font-dm text-[9px] text-linen-cream/25 uppercase tracking-widest whitespace-nowrap">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map((c, i) => (
+                  <tr key={c.id}
+                    className={`hover:bg-amber-tan/3 transition-colors cursor-pointer ${i < filtered.length - 1 ? "border-b border-amber-tan/6" : ""}`}
+                    onClick={() => setSelected(c)}>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-amber-tan/15 border border-amber-tan/25 flex items-center justify-center shrink-0">
+                          <span className="font-dm text-[10px] font-bold text-amber-tan">{initials(c.full_name)}</span>
+                        </div>
+                        <div>
+                          <p className="font-dm text-sm text-linen-cream">{c.full_name || "—"}</p>
+                          <p className="font-dm text-[10px] text-linen-cream/35">{c.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/50">{c.city || "—"}</td>
+                    <td className="px-5 py-3.5 font-dm text-sm text-linen-cream">{c.order_count}</td>
+                    <td className="px-5 py-3.5 font-dm text-sm text-amber-tan font-medium">{formatNGN(c.total_spent ?? 0)}</td>
+                    <td className="px-5 py-3.5 font-dm text-xs text-linen-cream/35">{formatDate(c.created_at)}</td>
+                    <td className="px-5 py-3.5 font-dm text-xs text-amber-tan hover:underline">View</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* Customer profile drawer */}
       {selected && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setSelected(null)} />
@@ -89,59 +133,54 @@ export default function AdminCustomers() {
               <button onClick={() => setSelected(null)} className="text-linen-cream/30 hover:text-linen-cream transition-colors"><X size={18} /></button>
             </div>
             <div className="p-6 space-y-6">
-              {/* Avatar + name */}
               <div className="flex flex-col items-center text-center gap-3">
                 <div className="w-16 h-16 rounded-full bg-amber-tan/15 border-2 border-amber-tan/30 flex items-center justify-center">
-                  <span className="font-dm text-2xl text-amber-tan">{initials(selected.name)}</span>
+                  <span className="font-dm text-2xl text-amber-tan">{initials(selected.full_name)}</span>
                 </div>
                 <div>
-                  <h3 className="font-dm text-xl text-linen-cream">{selected.name}</h3>
-                  <p className="font-dm text-xs text-linen-cream/35 mt-0.5">Customer since {selected.joined}</p>
+                  <h3 className="font-dm text-xl text-linen-cream">{selected.full_name || "—"}</h3>
+                  <p className="font-dm text-xs text-linen-cream/35 mt-0.5">Joined {formatDate(selected.created_at)}</p>
                 </div>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="card-gloss rounded-xl p-4 text-center">
-                  <p className="font-dm text-2xl text-amber-tan">{selected.orders}</p>
+                  <p className="font-dm text-2xl text-amber-tan">{selected.order_count}</p>
                   <p className="font-dm text-[10px] text-linen-cream/35 uppercase tracking-widest mt-1">Orders</p>
                 </div>
                 <div className="card-gloss rounded-xl p-4 text-center">
-                  <p className="font-dm text-lg text-amber-tan">{formatNGN(selected.spent)}</p>
+                  <p className="font-dm text-lg text-amber-tan">{formatNGN(selected.total_spent ?? 0)}</p>
                   <p className="font-dm text-[10px] text-linen-cream/35 uppercase tracking-widest mt-1">Total Spent</p>
                 </div>
               </div>
 
-              {/* Contact */}
               <div className="card-gloss rounded-xl p-4 space-y-2.5">
                 <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-3">Contact</p>
-                {[["Email", selected.email], ["Phone", selected.phone]].map(([k, v]) => (
+                {[["Email", selected.email], ["Phone", selected.phone || "—"]].map(([k, v]) => (
                   <div key={k} className="flex justify-between">
                     <span className="font-dm text-xs text-linen-cream/35">{k}</span>
                     <span className="font-dm text-xs text-linen-cream">{v}</span>
                   </div>
                 ))}
-                <div className="flex items-start gap-2 pt-1">
-                  <MapPin size={11} className="text-amber-tan shrink-0 mt-0.5" />
-                  <span className="font-dm text-xs text-linen-cream/40">{selected.location}, Nigeria</span>
-                </div>
+                {selected.city && (
+                  <div className="flex items-start gap-2 pt-1">
+                    <MapPin size={11} className="text-amber-tan shrink-0 mt-0.5" />
+                    <span className="font-dm text-xs text-linen-cream/40">{selected.city}, Nigeria</span>
+                  </div>
+                )}
               </div>
 
-              {/* Activity */}
-              <div>
-                <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-3">Activity</p>
-                <div className="space-y-2">
-                  {[
-                    { label: "Last Order", value: selected.lastOrder },
-                    { label: "Avg. Order Value", value: formatNGN(Math.round(selected.spent / selected.orders)) },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="flex justify-between border-b border-amber-tan/6 pb-2">
-                      <span className="font-dm text-xs text-linen-cream/35">{label}</span>
-                      <span className="font-dm text-xs text-linen-cream">{value}</span>
-                    </div>
-                  ))}
+              {(selected.order_count ?? 0) > 0 && (
+                <div className="card-gloss rounded-xl p-4">
+                  <p className="font-dm text-[10px] text-amber-tan uppercase tracking-widest mb-3">Stats</p>
+                  <div className="flex justify-between">
+                    <span className="font-dm text-xs text-linen-cream/35">Avg. Order Value</span>
+                    <span className="font-dm text-xs text-linen-cream">
+                      {formatNGN(Math.round((selected.total_spent ?? 0) / (selected.order_count ?? 1)))}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

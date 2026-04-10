@@ -41,7 +41,7 @@ function Sparkline({ color, points }: { color: string; points: string }) {
 
 export default function AdminOverview() {
   const supabase = createClient();
-  const { user } = useAuth();
+  const { } = useAuth();
   const [stats, setStats] = useState<Stats>({ revenue: 0, orders: 0, customers: 0 });
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);

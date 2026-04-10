@@ -108,7 +108,7 @@ export default function AdminProducts() {
   const supabase = createClient();
   // Use local products as base, overlay with any DB products
   const [products, setProducts] = useState(ALL_PRODUCTS);
-  const [dbProducts, setDbProducts] = useState<DBProduct[]>([]);
+  const [, setDbProducts] = useState<DBProduct[]>([]);
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<Gender | "all">("all");
   const [filterType, setFilterType] = useState<ProductType | "all">("all");

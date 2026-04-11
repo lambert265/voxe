@@ -12,12 +12,12 @@ export default function Hero() {
     <section className="relative min-h-screen bg-obsidian flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=80"
+          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1800&q=80"
           alt="VOXE hero" fill priority
-          className="object-cover object-center opacity-25"
+          className="object-cover object-top opacity-35"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-obsidian/90 via-obsidian/40 to-obsidian/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-obsidian/70 via-obsidian/30 to-obsidian/90" />
       </div>
 
       {/* Gold accent line */}
